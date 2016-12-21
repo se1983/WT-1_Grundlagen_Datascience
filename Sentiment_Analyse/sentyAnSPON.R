@@ -293,10 +293,8 @@ write.csv(data.sentiments.pp, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SP
 #9 PT
 
 
-all.group_by.day = group_by(data.sentiments.all, day)
-all.group_by.day summarise(a, positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
+#all.group_by.day = group_by(data.sentiments.all, day)
+#all.group_by.day summarise(a, positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
 
-
-data$day = str_split(data$day, '\\.')
-
-data$year <- apply(data,1, function(row) str_split(row[3], '\\.'))
+#data$day = str_split(data$day, '\\.')
+#data$year <- apply(data,1, function(row) str_split(row[3], '\\.'))
