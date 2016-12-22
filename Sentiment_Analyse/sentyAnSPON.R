@@ -36,7 +36,7 @@ analyse.sentiment = function(sentences, pos.words, neu.words, neg.words, .progre
 
   words = unlist(word.list)
 
-  # compare our words to the dictionaries of positiv & negative terms
+  # compare words to the dictionaries of positiv & neutral & negative terms
 
   pos.matches = match(words, pos.words)
   neg.matches = match(words, neg.words)
@@ -51,13 +51,13 @@ analyse.sentiment = function(sentences, pos.words, neu.words, neg.words, .progre
 
   # and conveniently enough, TRUE/FALSE will be treated as 1/0 by sum():
 
-  score = c(sum(pos.matches), sum(neu.matches), sum(neg.matches))
+  result = c(sum(pos.matches), sum(neu.matches), sum(neg.matches), sum(pos.matches)/length(words), sum(neu.matches)/length(words), sum(neg.matches)/length(words))
 
-  return(score)
+  return(result)
 
   }, pos.words, neu.words, neg.words, .progress=.progress )
 
-  sentiments.df = data.frame(positiv=sentiments[ ,1], neutral=sentiments[ ,2], negativ=sentiments[ ,3], headline=sentences$headline, weekday=sentences$weekday, day=sentences$day, time=sentences$time, cats=sentences$cats)
+  sentiments.df = data.frame(positiv=sentiments[ ,1], neutral=sentiments[ ,2], negativ=sentiments[ ,3], positiv.cum=sentiments[ ,4], neutral.cum=sentiments[ ,5], negativ.cum=sentiments[ ,6], headline=sentences$headline, weekday=sentences$weekday, day=sentences$day, month=sentences$month, year=sentences$year, time=sentences$time, cats=sentences$cats)
   return(sentiments.df)
 }
 
@@ -66,10 +66,9 @@ analyse.sentiment = function(sentences, pos.words, neu.words, neg.words, .progre
 ####################################
 
 # Load sentiment files
-pos.table = read.table('Desktop/GSN/Sentimentanalyse/GermanPolarityClues-2012/GermanPolarityClues-positiv-Lemma-21042012.tsv', encoding="UTF-8", header=FALSE, sep="\t")
-neg.table = read.table('Desktop/GSN/Sentimentanalyse/GermanPolarityClues-2012/GermanPolarityClues-Negative-Lemma-21042012.tsv', encoding="UTF-8", header=FALSE, sep="\t")
-neu.table = read.table('Desktop/GSN/Sentimentanalyse/GermanPolarityClues-2012/GermanPolarityClues-Neutral-Lemma-21042012.tsv', encoding="UTF-8", header=FALSE, sep="\t")
-
+pos.table = read.table('/Users/admin/Desktop/GSN/Sentimentanalyse/GermanPolarityClues-2012/GermanPolarityClues-Positive-Lemma-21042012.tsv', encoding="UTF-8", header=FALSE, sep="\t")
+neg.table = read.table('/Users/admin/Desktop/GSN/Sentimentanalyse/GermanPolarityClues-2012/GermanPolarityClues-Negative-Lemma-21042012.tsv', encoding="UTF-8", header=FALSE, sep="\t")
+neu.table = read.table('/Users/admin/Desktop/GSN/Sentimentanalyse/GermanPolarityClues-2012/GermanPolarityClues-Neutral-Lemma-21042012.tsv', encoding="UTF-8", header=FALSE, sep="\t")
 
 # Filter all sentiment words to word lists
 pos.words = pos.table$V2
@@ -151,11 +150,16 @@ pp.neg.words = neg.table[neg.table$V3 == "PP", ]$V2
 pp.pos.words = pos.table[pos.table$V3 == "PP", ]$V2
 pp.neu.words = neu.table[neu.table$V3 == "PP", ]$V2
 
-# Load SPON csv file
+# Load CSV File
 data <- read.csv("Desktop/GSN/Sentimentanalyse/testSPON.csv", encoding="UTF-8", header = TRUE, sep = "\t", quote = "\"", dec = ".", fill = TRUE, comment.char = "")
 
 # Convert String to Date
-data$day <- as.Date(data$day, format="%d.%m.%Y")
+# data$day <- as.Date(data$day, format="%d.%m.%Y")
+
+# Split String into Day, Month, Year
+data$year = laply(data$day, function(date) unlist(str_split(date, '\\.'))[3])
+data$month = laply(data$day, function(date) unlist(str_split(date, '\\.'))[2])
+data$day = laply(data$day, function(date) unlist(str_split(date, '\\.'))[1])
 
 # Convert String to factor
 data$article<-as.factor(data$article)
@@ -213,42 +217,65 @@ data.sentiments.pp = analyse.sentiment(data, pp.pos.words, pp.neu.words, pp.neg.
 # -3- Result Processing
 ####################################
 
+# Filter data by Categories
+data.filtered.politik <- filter(data.sentiments.all, grepl("Politik", data.sentiments.all$cats))
+data.filtered.wirtschaft <- filter(data.sentiments.all, grepl("Wirtschaft", data.sentiments.all$cats))
+data.filtered.ausland <- filter(data.sentiments.all, grepl("Ausland", data.sentiments.all$cats))
+data.filtered.nahostkonflikt <- filter(data.sentiments.all, grepl("Nahostkonflikt", data.sentiments.all$cats))
+
+# Group data by Day, Month, Year and cummulate Sentiments
+all.cum = summarise(group_by(data.sentiments.all, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
+nn.cum = summarise(group_by(data.sentiments.nn, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
+ne.cum = summarise(group_by(data.sentiments.ne, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
+xy.cum = summarise(group_by(data.sentiments.xy, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
+ca.cum = summarise(group_by(data.sentiments.ca, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
+ad.cum = summarise(group_by(data.sentiments.ad, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
+pd.cum = summarise(group_by(data.sentiments.pd, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
+vv.cum = summarise(group_by(data.sentiments.vv, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
+ap.cum = summarise(group_by(data.sentiments.ap, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
+pt.cum = summarise(group_by(data.sentiments.pt, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
+fm.cum = summarise(group_by(data.sentiments.fm, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
+pi.cum = summarise(group_by(data.sentiments.pi, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
+ko.cum = summarise(group_by(data.sentiments.ko, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
+pr.cum = summarise(group_by(data.sentiments.pr, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
+pp.cum = summarise(group_by(data.sentiments.pp, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
+
 # Order all results by Day and Time
-data.sentiments.all <- data.sentiments.all[order(data.sentiments.all$day, data.sentiments.all$time), ]
-data.sentiments.nn <- data.sentiments.nn[order(data.sentiments.nn$day, data.sentiments.nn$time), ]
-data.sentiments.ne <- data.sentiments.ne[order(data.sentiments.ne$day, data.sentiments.ne$time), ]
-data.sentiments.xy <- data.sentiments.xy[order(data.sentiments.xy$day, data.sentiments.xy$time), ]
-data.sentiments.ca <- data.sentiments.ca[order(data.sentiments.ca$day, data.sentiments.ca$time), ]
-data.sentiments.ad <- data.sentiments.ad[order(data.sentiments.ad$day, data.sentiments.ad$time), ]
-data.sentiments.pd <- data.sentiments.pd[order(data.sentiments.pd$day, data.sentiments.pd$time), ]
-data.sentiments.vv <- data.sentiments.vv[order(data.sentiments.vv$day, data.sentiments.vv$time), ]
-data.sentiments.ap <- data.sentiments.ap[order(data.sentiments.ap$day, data.sentiments.ap$time), ]
-data.sentiments.pt <- data.sentiments.pt[order(data.sentiments.pt$day, data.sentiments.pt$time), ]
-data.sentiments.fm <- data.sentiments.fm[order(data.sentiments.fm$day, data.sentiments.fm$time), ]
-data.sentiments.pi <- data.sentiments.pi[order(data.sentiments.pi$day, data.sentiments.pi$time), ]
-data.sentiments.ko <- data.sentiments.ko[order(data.sentiments.ko$day, data.sentiments.ko$time), ]
-data.sentiments.pr <- data.sentiments.pr[order(data.sentiments.pr$day, data.sentiments.pr$time), ]
-data.sentiments.pp <- data.sentiments.pp[order(data.sentiments.pp$day, data.sentiments.pp$time), ]
+#data.sentiments.all <- data.sentiments.all[order(data.sentiments.all$day, data.sentiments.all$time), ]
+#data.sentiments.nn <- data.sentiments.nn[order(data.sentiments.nn$day, data.sentiments.nn$time), ]
+#data.sentiments.ne <- data.sentiments.ne[order(data.sentiments.ne$day, data.sentiments.ne$time), ]
+#data.sentiments.xy <- data.sentiments.xy[order(data.sentiments.xy$day, data.sentiments.xy$time), ]
+#data.sentiments.ca <- data.sentiments.ca[order(data.sentiments.ca$day, data.sentiments.ca$time), ]
+#data.sentiments.ad <- data.sentiments.ad[order(data.sentiments.ad$day, data.sentiments.ad$time), ]
+#data.sentiments.pd <- data.sentiments.pd[order(data.sentiments.pd$day, data.sentiments.pd$time), ]
+#data.sentiments.vv <- data.sentiments.vv[order(data.sentiments.vv$day, data.sentiments.vv$time), ]
+#data.sentiments.ap <- data.sentiments.ap[order(data.sentiments.ap$day, data.sentiments.ap$time), ]
+#data.sentiments.pt <- data.sentiments.pt[order(data.sentiments.pt$day, data.sentiments.pt$time), ]
+#data.sentiments.fm <- data.sentiments.fm[order(data.sentiments.fm$day, data.sentiments.fm$time), ]
+#data.sentiments.pi <- data.sentiments.pi[order(data.sentiments.pi$day, data.sentiments.pi$time), ]
+#data.sentiments.ko <- data.sentiments.ko[order(data.sentiments.ko$day, data.sentiments.ko$time), ]
+#data.sentiments.pr <- data.sentiments.pr[order(data.sentiments.pr$day, data.sentiments.pr$time), ]
+#data.sentiments.pp <- data.sentiments.pp[order(data.sentiments.pp$day, data.sentiments.pp$time), ]
 
 ####################################
 # -4- Saving Result
 ####################################
 
-write.csv(data.sentiments.all, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SPONSentiments.csv", sep="\t", row.names=TRUE)
-write.csv(data.sentiments.nn, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SPONSentiments.csv", sep="\t", row.names=TRUE)
-write.csv(data.sentiments.ne, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SPONSentiments.csv", sep="\t", row.names=TRUE)
-write.csv(data.sentiments.xy, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SPONSentiments.csv", sep="\t", row.names=TRUE)
-write.csv(data.sentiments.ca, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SPONSentiments.csv", sep="\t", row.names=TRUE)
-write.csv(data.sentiments.ad, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SPONSentiments.csv", sep="\t", row.names=TRUE)
-write.csv(data.sentiments.pd, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SPONSentiments.csv", sep="\t", row.names=TRUE)
-write.csv(data.sentiments.vv, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SPONSentiments.csv", sep="\t", row.names=TRUE)
-write.csv(data.sentiments.ap, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SPONSentiments.csv", sep="\t", row.names=TRUE)
-write.csv(data.sentiments.pt, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SPONSentiments.csv", sep="\t", row.names=TRUE)
-write.csv(data.sentiments.fm, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SPONSentiments.csv", sep="\t", row.names=TRUE)
-write.csv(data.sentiments.pi, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SPONSentiments.csv", sep="\t", row.names=TRUE)
-write.csv(data.sentiments.ko, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SPONSentiments.csv", sep="\t", row.names=TRUE)
-write.csv(data.sentiments.pr, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SPONSentiments.csv", sep="\t", row.names=TRUE)
-write.csv(data.sentiments.pp, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SPONSentiments.csv", sep="\t", row.names=TRUE)
+#write.csv(data.sentiments.all, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SPONSentiments.csv", sep="\t", row.names=TRUE)
+#write.csv(data.sentiments.nn, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SPONSentiments.csv", sep="\t", row.names=TRUE)
+#write.csv(data.sentiments.ne, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SPONSentiments.csv", sep="\t", row.names=TRUE)
+#write.csv(data.sentiments.xy, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SPONSentiments.csv", sep="\t", row.names=TRUE)
+#write.csv(data.sentiments.ca, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SPONSentiments.csv", sep="\t", row.names=TRUE)
+#write.csv(data.sentiments.ad, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SPONSentiments.csv", sep="\t", row.names=TRUE)
+#write.csv(data.sentiments.pd, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SPONSentiments.csv", sep="\t", row.names=TRUE)
+#write.csv(data.sentiments.vv, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SPONSentiments.csv", sep="\t", row.names=TRUE)
+#write.csv(data.sentiments.ap, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SPONSentiments.csv", sep="\t", row.names=TRUE)
+#write.csv(data.sentiments.pt, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SPONSentiments.csv", sep="\t", row.names=TRUE)
+#write.csv(data.sentiments.fm, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SPONSentiments.csv", sep="\t", row.names=TRUE)
+#write.csv(data.sentiments.pi, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SPONSentiments.csv", sep="\t", row.names=TRUE)
+#write.csv(data.sentiments.ko, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SPONSentiments.csv", sep="\t", row.names=TRUE)
+#write.csv(data.sentiments.pr, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SPONSentiments.csv", sep="\t", row.names=TRUE)
+#write.csv(data.sentiments.pp, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SPONSentiments.csv", sep="\t", row.names=TRUE)
 
 # Appearances of Parts Of Speech in Sentiment Lists
 
@@ -291,10 +318,3 @@ write.csv(data.sentiments.pp, file="/Users/admin/Desktop/GSN/Sentimentanalyse/SP
 #7 CA
 #8 AP
 #9 PT
-
-
-#all.group_by.day = group_by(data.sentiments.all, day)
-#all.group_by.day summarise(a, positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
-
-#data$day = str_split(data$day, '\\.')
-#data$year <- apply(data,1, function(row) str_split(row[3], '\\.'))
