@@ -8,7 +8,7 @@ library("stringr")
 # Analysis Function
 ####################################
 
-analyse.sentiment = function(sentences, pos.words, neu.words, neg.words, .progress='none')
+analyse.sentiment = function(data, pos.words, neu.words, neg.words, .progress='none')
 {
   require(plyr)
   require(stringr)
@@ -18,19 +18,19 @@ analyse.sentiment = function(sentences, pos.words, neu.words, neg.words, .progre
   # we want a simple array ("a") of scores back, so we use
   # "l" + "a" + "ply" = "laply":
 
-  sentiments = laply(sentences$article, function(sentence, pos.words, neu.words, neg.words) {
+  sentiments = laply(data$article, function(article, pos.words, neu.words, neg.words) {
 
-  # clean up sentences with R's regex-driven global substitute, gsub():
+  # clean up article with R's regex-driven global substitute, gsub():
 
-  sentence = gsub('[^a-zA-Z]', ' ', sentence)
+  article = gsub('[^a-zA-Z]', ' ', article)
 
   # and convert to lower case:
 
-  sentence = tolower(sentence)
+  article = tolower(article)
 
   # split into words. str_split is in the stringr package
 
-  word.list = str_split(sentence, '\\s+')
+  word.list = str_split(article, '\\s+')
 
   # sometimes a list() is one level of hierarchy too much
 
@@ -57,7 +57,7 @@ analyse.sentiment = function(sentences, pos.words, neu.words, neg.words, .progre
 
   }, pos.words, neu.words, neg.words, .progress=.progress )
 
-  sentiments.df = data.frame(positiv=sentiments[ ,1], neutral=sentiments[ ,2], negativ=sentiments[ ,3], positiv.cum=sentiments[ ,4], neutral.cum=sentiments[ ,5], negativ.cum=sentiments[ ,6], headline=sentences$headline, weekday=sentences$weekday, day=sentences$day, month=sentences$month, year=sentences$year, time=sentences$time, cats=sentences$cats)
+  sentiments.df = data.frame(positiv=sentiments[ ,1], neutral=sentiments[ ,2], negativ=sentiments[ ,3], positiv.cum=sentiments[ ,4], neutral.cum=sentiments[ ,5], negativ.cum=sentiments[ ,6], headline=data$headline, weekday=data$weekday, day=data$day, month=data$month, year=data$year, time=data$time, cats=data$cats)
   return(sentiments.df)
 }
 
