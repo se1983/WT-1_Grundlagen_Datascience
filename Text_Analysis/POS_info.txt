@@ -1,7 +1,8 @@
-#########################################
-### INFO ZU ALLEN PART-OF-SPEECH TAGS ###
-#########################################
+########################################
+### INFO FOR ALL PART-OF-SPEECH TAGS ###
+########################################
 
+## Appearances in TreeTag Lists
 Quelle: http://www.cis.uni-muenchen.de/~schmid/tools/TreeTagger/data/stts_guide.pdf
 
 Nomina:
