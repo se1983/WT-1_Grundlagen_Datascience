@@ -1,0 +1,64 @@
+#########################################
+### INFO ZU ALLEN PART-OF-SPEECH TAGS ###
+#########################################
+
+Quelle: http://www.cis.uni-muenchen.de/~schmid/tools/TreeTagger/data/stts_guide.pdf
+
+Nomina:
+NN normale Nomina
+NE Eigennamen
+
+Adjektive:
+ADJA attributive Adjektive
+ADJD prädikativ oder adverbial gebrauchte Adjektive
+
+Zahlen:
+CARD Kardinalzahlen
+
+Verben:
+VAFIN, VAIMP, VVFIN, VVIMP, VMFIN finite Formen
+VVINF, VAINF, VMIMF, VVIZU Infinitiv
+VVPP, VMPP, VAPP Partizip Perfekt
+
+Artikel:
+ART bestimmter und unbestimmter Artikel
+
+Pronomina:
+PPER, PRF Personal- und Reflexivpronomina
+PPOSAT, PPOSS Possessivpronomina
+PDAT, PDS Demonstrativpronomina
+PIDAT, PIS, PIAT Indefinitpronomina
+PWAT, PWS Interrogativpronomina
+PWAV adverbial Interrogativ- oder Relativpronomina
+PAV Pronominaladverbien
+
+Adverbien:
+ADV "echte" Adverbien
+
+Konjunktionen:
+KOUI unterordnende Konjunktionen mit Infinitiv
+KOUS unterordnende Konjunktionen mit Satz
+KON nebenordnende Konjunktion
+KOKOM Vergleichspartikel
+
+Adpositionen:
+APPR Präposition
+APPRART Präposition mit Artikel
+APPO Postposition
+APZR Zirkumposition rechts
+
+Partikel:
+PTKZU "zu" vor Infinitiv
+PTKNEG Negationspartikel
+PTKVZ abgetrennter Verbzusatz
+PTKA Partikel bei Adjektiv oder Adverb
+PTKANT Antwortpartikel
+
+Interpunktionen:
+$, $( $.
+
+Sonstige
+ITJ Interjektionen
+TRUNC Kompositions-Erstglied
+XY Nichtwörter
+FM Fremdsprachliches Material
