@@ -1,7 +1,7 @@
-install.packages("plyr")
-install.packages("dplyr")
-install.packages("/home/marisa/R/koRpus_0.06-5.tar.gz", repos = NULL, type = "source")
-install.packages("stringr")
+#install.packages("plyr")
+#install.packages("dplyr")
+#install.packages("/home/marisa/R/koRpus_0.06-5.tar.gz", repos = NULL, type = "source")
+#install.packages("stringr")
 
 library("plyr")
 library("dplyr")
@@ -42,7 +42,7 @@ get.tagged.text <- function(article) {
 
 ## SPON
 # Load CSV File
-data.SPON <- read.csv("/share/Data/SPON_complete.csv", encoding="UTF-16LE", header = TRUE, sep = ",", quote = "\"", dec = ".", fill = TRUE, comment.char = "")
+data.SPON <- read.csv("/share/Data/SPON_complete", encoding="UTF-16LE", header = TRUE, sep = ",", quote = "\"", dec = ".", fill = TRUE, comment.char = "")
 
 # Split String into Day, Month, Year
 data.SPON$year = laply(data.SPON$day, function(date) unlist(str_split(date, '\\.'))[3])

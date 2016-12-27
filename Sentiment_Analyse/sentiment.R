@@ -64,7 +64,7 @@ analyse.sentiment = function(data, pos.words, neu.words, neg.words, .progress='n
 # Load sentiment files
 pos.table = read.table('/share/GermanPolarityClues-2012/GermanPolarityClues-Positive-Lemma-21042012.tsv', encoding="UTF-16LE", header=FALSE, sep="\t")
 neg.table = read.table('/share/GermanPolarityClues-2012/GermanPolarityClues-Negative-Lemma-21042012.tsv', encoding="UTF-16LE", header=FALSE, sep="\t")
-neu.table = read.table('/share/GermanPolarityClues-2012/GermanPolarityClues-Neutral-Lemma-21042012.tsv', encoding="UTF-16LE", header=FALSE, sep="\t")
+neu.table = read.table('/share/Data/GermanPolarityClues-Neutral-Lemma-21042012.tsv', encoding="UTF-16LE", header=FALSE, sep="\t")
 
 # Filter all sentiment words to word lists
 pos.words = pos.table$V2
@@ -149,7 +149,7 @@ pp.neu.words = neu.table[neu.table$V3 == "PP", ]$V2
 ############### SPON ################
 
 # Load CSV File
-data.SPON <- read.csv("/share/Data/SPON_complete.csv", encoding="UTF-16LE", header = TRUE, sep = ",", quote = "\"", dec = ".", fill = TRUE, comment.char = "")
+data.SPON <- read.csv("/share/Data/SPON_complete", encoding="UTF-16LE", header = TRUE, sep = ",", quote = "\"", dec = ".", fill = TRUE, comment.char = "")
 
 # Convert String to Date
 # data.SPON$day <- as.Date(data.SPON$day, format="%d.%m.%Y")
