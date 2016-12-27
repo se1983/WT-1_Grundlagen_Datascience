@@ -12,11 +12,15 @@ library("stringr")
 # Analysis Function
 ####################################
 
-analyse.text = function(data)
+analyse.text = function(data, .progress='none')
 {
-  result = laply(data$article, function(article) {
-    return(textFeatures(get.tagged.text(article)))
-  })
+  result <- laply(data$article, function(article) {
+    result <- textFeatures(get.tagged.text(article))
+    write.csv(result, file=paste("/Users/admin/Desktop/GSN/Textanalyse/lexical/tmp/", Sys.time(), ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+    return ()
+    #if(article != "")
+    #else return (data.frame(uniquWd=c("NA"), complx=c("NA"), sntCt=c("NA"), sntLen=c("NA"), syllCt=c("NA"), charCt=c("NA"), lttrCt=c("NA"), FOG=c("NA"), flesch=c("NA")))
+  }, .progress=.progress )
 
   result.df = data.frame(data, result)
   return(result.df)
@@ -49,6 +53,7 @@ data.SPON$day = laply(data.SPON$day, function(date) unlist(str_split(date, '\\.'
 
 # Convert Factor to String
 data.SPON$article <- laply(data.SPON$article, as.character)
+data.SPON <- filter(data.SPON, data.SPON$article != "")
 
 ##JF
 # Load CSV File
@@ -61,14 +66,19 @@ data.JF$day = laply(data.JF$day, function(date) unlist(str_split(date, '\\.'))[1
 
 # Convert Factor to String
 data.JF$article <- laply(data.JF$article, as.character)
+data.JF <- filter(data.JF, data.JF$article != "")
 
 ####################################
 # -2- Data Analysis
 ####################################
 
+##SPON
 # Analyse text regarding all Part Of Speech
-text.analysis.SPON = analyse.text(data.SPON)
-text.analysis.JF = analyse.text(data.JF)
+text.analysis.SPON = analyse.text(data.SPON, .progress='text')
+
+##JF
+# Analyse text regarding all Part Of Speech
+text.analysis.JF = analyse.text(data.JF, .progress='text')
 
 ####################################
 # -3- Result Processing
@@ -79,5 +89,5 @@ text.analysis.JF = analyse.text(data.JF)
 # -4- Saving Result
 ####################################
 
-write.csv(text.analysis.SPON, file=paste("/Users/admin/Desktop/GSN/Textanalyse/lexical/SPON/", Sys.time(), ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(text.analysis.JF, file=paste("/Users/admin/Desktop/GSN/Textanalyse/lexical/JF/", Sys.time(), ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(text.analysis.SPON, file="/Users/admin/Desktop/GSN/Textanalyse/lexical/SPON/SPON_lexical.csv", sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(text.analysis.JF, file="/Users/admin/Desktop/GSN/Textanalyse/lexical/JF/JF_lexical.csv", sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")

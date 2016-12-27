@@ -51,7 +51,7 @@ analyse.sentiment = function(data, pos.words, neu.words, neg.words, .progress='n
 
   }, pos.words, neu.words, neg.words, .progress=.progress )
 
-  sentiments.df = data.frame(positiv=sentiments[ ,1], neutral=sentiments[ ,2], negativ=sentiments[ ,3], positiv.cum=sentiments[ ,4], neutral.cum=sentiments[ ,5], negativ.cum=sentiments[ ,6], headline=data$headline, weekday=data$weekday, day=data$day, month=data$month, year=data$year, time=data$time, cats=data$cats)
+  sentiments.df = data.frame(positiv_abs=sentiments[ ,1], neutral_abs=sentiments[ ,2], negativ_abs=sentiments[ ,3], positiv_rel=sentiments[ ,4], neutral_rel=sentiments[ ,5], negativ_rel=sentiments[ ,6], headline=data$headline, weekday=data$weekday, day=data$day, month=data$month, year=data$year, time=data$time, cats=data$cats)
   return(sentiments.df)
 }
 
@@ -146,8 +146,6 @@ pp.neg.words = neg.table[neg.table$V3 == "PP", ]$V2
 pp.pos.words = pos.table[pos.table$V3 == "PP", ]$V2
 pp.neu.words = neu.table[neu.table$V3 == "PP", ]$V2
 
-######### News Paper Files ##########
-
 ############### SPON ################
 
 # Load CSV File
@@ -162,6 +160,8 @@ data.SPON$month = laply(data.SPON$day, function(date) unlist(str_split(date, '\\
 data.SPON$day = laply(data.SPON$day, function(date) unlist(str_split(date, '\\.'))[1])
 
 # Convert String to factor
+data.SPON$article <- laply(data.SPON$article, as.character)
+data.SPON <- filter(data.SPON, data.SPON$article != "")
 data.SPON$article<-as.factor(data.SPON$article)
 
 ############### JF ################
@@ -178,6 +178,8 @@ data.JF$month = laply(data.JF$day, function(date) unlist(str_split(date, '\\.'))
 data.JF$day = laply(data.JF$day, function(date) unlist(str_split(date, '\\.'))[1])
 
 # Convert String to factor
+data.JF$article <- laply(data.JF$article, as.character)
+data.JF <- filter(data.JF, data.JF$article != "")
 data.JF$article<-as.factor(data.JF$article)
 
 ####################################
@@ -251,107 +253,92 @@ data.JF.sentiments.pr = analyse.sentiment(data.JF, pr.pos.words, pr.neu.words, p
 data.JF.sentiments.pp = analyse.sentiment(data.JF, pp.pos.words, pp.neu.words, pp.neg.words, .progress='text')
 
 ####################################
+########## All Catagories ##########
+####################################
+
+####################################
 # -3- Result Processing
 ####################################
 
 ############### SPON ################
 
-############# Filtering #############
-########### By Catagories ###########
-
-catagory = "Politik"
-data.SPON.filtered <- filter(data.SPON.sentiments.all, grepl(catagory, data.SPON.sentiments.all$cats))
-
-#data.filtered.wirtschaft <- filter(data.SPON.sentiments.all, grepl("Wirtschaft", data.sentiments.all$cats))
-#data.filtered.ausland <- filter(data.SPON.sentiments.all, grepl("Ausland", data.sentiments.all$cats))
-#data.filtered.nahostkonflikt <- filter(data.SPON.sentiments.all, grepl("Nahostkonflikt", data.sentiments.all$cats))
-
 ############# Grouping ##############
 ######### By Year, Month, Day #######
 
-all.SPON.grouped = summarise(group_by(data.SPON.sentiments.all, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
-nn.SPON.grouped = summarise(group_by(data.SPON.sentiments.nn, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
-ne.SPON.grouped = summarise(group_by(data.SPON.sentiments.ne, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
-xy.SPON.grouped = summarise(group_by(data.SPON.sentiments.xy, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
-ca.SPON.grouped = summarise(group_by(data.SPON.sentiments.ca, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
-ad.SPON.grouped = summarise(group_by(data.SPON.sentiments.ad, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
-pd.SPON.grouped = summarise(group_by(data.SPON.sentiments.pd, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
-vv.SPON.grouped = summarise(group_by(data.SPON.sentiments.vv, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
-ap.SPON.grouped = summarise(group_by(data.SPON.sentiments.ap, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
-pt.SPON.grouped = summarise(group_by(data.SPON.sentiments.pt, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
-fm.SPON.grouped = summarise(group_by(data.SPON.sentiments.fm, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
-pi.SPON.grouped = summarise(group_by(data.SPON.sentiments.pi, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
-ko.SPON.grouped = summarise(group_by(data.SPON.sentiments.ko, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
-pr.SPON.grouped = summarise(group_by(data.SPON.sentiments.pr, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
-pp.SPON.grouped = summarise(group_by(data.SPON.sentiments.pp, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
+data.SPON.grouped.all = summarise(group_by(data.SPON.sentiments.all, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.nn = summarise(group_by(data.SPON.sentiments.nn, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.ne = summarise(group_by(data.SPON.sentiments.ne, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.xy = summarise(group_by(data.SPON.sentiments.xy, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.ca = summarise(group_by(data.SPON.sentiments.ca, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.ad = summarise(group_by(data.SPON.sentiments.ad, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.pd = summarise(group_by(data.SPON.sentiments.pd, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.vv = summarise(group_by(data.SPON.sentiments.vv, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.ap = summarise(group_by(data.SPON.sentiments.ap, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.pt = summarise(group_by(data.SPON.sentiments.pt, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.fm = summarise(group_by(data.SPON.sentiments.fm, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.pi = summarise(group_by(data.SPON.sentiments.pi, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.ko = summarise(group_by(data.SPON.sentiments.ko, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.pr = summarise(group_by(data.SPON.sentiments.pr, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.pp = summarise(group_by(data.SPON.sentiments.pp, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
 
 ############# Ordering ##############
 ########### By Day and Time #########
 
-all.SPON.grouped <- all.SPON.grouped[order(all.SPON.grouped$day, all.SPON.grouped$time), ]
-nn.SPON.grouped <- nn.SPON.grouped[order(nn.SPON.grouped$day, nn.SPON.grouped$time), ]
-ne.SPON.grouped <- ne.SPON.grouped[order(ne.SPON.grouped$day, ne.SPON.grouped$time), ]
-xy.SPON.grouped <- xy.SPON.grouped[order(xy.SPON.grouped$day, xy.SPON.grouped$time), ]
-ca.SPON.grouped <- ca.SPON.grouped[order(ca.SPON.grouped$day, ca.SPON.grouped$time), ]
-ad.SPON.grouped <- ad.SPON.grouped[order(ad.SPON.grouped$day, ad.SPON.grouped$time), ]
-pd.SPON.grouped <- pd.SPON.grouped[order(pd.SPON.grouped$day, pd.SPON.grouped$time), ]
-vv.SPON.grouped <- vv.SPON.grouped[order(vv.SPON.grouped$day, vv.SPON.grouped$time), ]
-ap.SPON.grouped <- ap.SPON.grouped[order(ap.SPON.grouped$day, ap.SPON.grouped$time), ]
-pt.SPON.grouped <- pt.SPON.grouped[order(pt.SPON.grouped$day, pt.SPON.grouped$time), ]
-fm.SPON.grouped <- fm.SPON.grouped[order(fm.SPON.grouped$day, fm.SPON.grouped$time), ]
-pi.SPON.grouped <- pi.SPON.grouped[order(pi.SPON.grouped$day, pi.SPON.grouped$time), ]
-ko.SPON.grouped <- ko.SPON.grouped[order(ko.SPON.grouped$day, ko.SPON.grouped$time), ]
-pr.SPON.grouped <- pr.SPON.grouped[order(pr.SPON.grouped$day, pr.SPON.grouped$time), ]
-pp.SPON.grouped <- pp.SPON.grouped[order(pp.SPON.grouped$day, pp.SPON.grouped$time), ]
+data.SPON.grouped.all <- data.SPON.grouped.all[order(data.SPON.grouped.all$year, data.SPON.grouped.all$month, data.SPON.grouped.all$day), ]
+data.SPON.grouped.nn <- data.SPON.grouped.nn[order(data.SPON.grouped.nn$year, data.SPON.grouped.nn$month, data.SPON.grouped.nn$day), ]
+data.SPON.grouped.ne <- data.SPON.grouped.ne[order(data.SPON.grouped.ne$year, data.SPON.grouped.ne$month, data.SPON.grouped.ne$day), ]
+data.SPON.grouped.xy <- data.SPON.grouped.xy[order(data.SPON.grouped.xy$year, data.SPON.grouped.xy$month, data.SPON.grouped.xy$day), ]
+data.SPON.grouped.ca <- data.SPON.grouped.ca[order(data.SPON.grouped.ca$year, data.SPON.grouped.ca$month, data.SPON.grouped.ca$day), ]
+data.SPON.grouped.ad <- data.SPON.grouped.ad[order(data.SPON.grouped.ad$year, data.SPON.grouped.ad$month, data.SPON.grouped.ad$day), ]
+data.SPON.grouped.pd <- data.SPON.grouped.pd[order(data.SPON.grouped.pd$year, data.SPON.grouped.pd$month, data.SPON.grouped.pd$day), ]
+data.SPON.grouped.vv <- data.SPON.grouped.vv[order(data.SPON.grouped.vv$year, data.SPON.grouped.vv$month, data.SPON.grouped.vv$day), ]
+data.SPON.grouped.ap <- data.SPON.grouped.ap[order(data.SPON.grouped.ap$year, data.SPON.grouped.ap$month, data.SPON.grouped.ap$day), ]
+data.SPON.grouped.pt <- data.SPON.grouped.pt[order(data.SPON.grouped.pt$year, data.SPON.grouped.pt$month, data.SPON.grouped.pt$day), ]
+data.SPON.grouped.fm <- data.SPON.grouped.fm[order(data.SPON.grouped.fm$year, data.SPON.grouped.fm$month, data.SPON.grouped.fm$day), ]
+data.SPON.grouped.pi <- data.SPON.grouped.pi[order(data.SPON.grouped.pi$year, data.SPON.grouped.pi$month, data.SPON.grouped.pi$day), ]
+data.SPON.grouped.ko <- data.SPON.grouped.ko[order(data.SPON.grouped.ko$year, data.SPON.grouped.ko$month, data.SPON.grouped.ko$day), ]
+data.SPON.grouped.pr <- data.SPON.grouped.pr[order(data.SPON.grouped.pr$year, data.SPON.grouped.pr$month, data.SPON.grouped.pr$day), ]
+data.SPON.grouped.pp <- data.SPON.grouped.pp[order(data.SPON.grouped.pp$year, data.SPON.grouped.pp$month, data.SPON.grouped.pp$day), ]
 
-############### FJ ################
-
-############# Filtering #############
-########### By Catagories ###########
-
-data.FJ.filtered <- filter(data.FJ.sentiments.all, grepl(catagory, data.FJ.sentiments.all$cats))
-
-#data.filtered.wirtschaft <- filter(data.FJ.sentiments.all, grepl("Wirtschaft", data.sentiments.all$cats))
-#data.filtered.ausland <- filter(data.FJ.sentiments.all, grepl("Ausland", data.sentiments.all$cats))
-#data.filtered.nahostkonflikt <- filter(data.FJ.sentiments.all, grepl("Nahostkonflikt", data.sentiments.all$cats))
+############### JF ################
 
 ############# Grouping ##############
 ######### By Year, Month, Day #######
 
-all.FJ.grouped = summarise(group_by(data.FJ.sentiments.all, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
-nn.FJ.grouped = summarise(group_by(data.FJ.sentiments.nn, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
-ne.FJ.grouped = summarise(group_by(data.FJ.sentiments.ne, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
-xy.FJ.grouped = summarise(group_by(data.FJ.sentiments.xy, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
-ca.FJ.grouped = summarise(group_by(data.FJ.sentiments.ca, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
-ad.FJ.grouped = summarise(group_by(data.FJ.sentiments.ad, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
-pd.FJ.grouped = summarise(group_by(data.FJ.sentiments.pd, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
-vv.FJ.grouped = summarise(group_by(data.FJ.sentiments.vv, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
-ap.FJ.grouped = summarise(group_by(data.FJ.sentiments.ap, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
-pt.FJ.grouped = summarise(group_by(data.FJ.sentiments.pt, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
-fm.FJ.grouped = summarise(group_by(data.FJ.sentiments.fm, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
-pi.FJ.grouped = summarise(group_by(data.FJ.sentiments.pi, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
-ko.FJ.grouped = summarise(group_by(data.FJ.sentiments.ko, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
-pr.FJ.grouped = summarise(group_by(data.FJ.sentiments.pr, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
-pp.FJ.grouped = summarise(group_by(data.FJ.sentiments.pp, year, month, day), positiv = sum(positiv), neutral = sum(neutral), negativ = sum(negativ))
+data.JF.grouped.all = summarise(group_by(data.JF.sentiments.all, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.nn = summarise(group_by(data.JF.sentiments.nn, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.ne = summarise(group_by(data.JF.sentiments.ne, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.xy = summarise(group_by(data.JF.sentiments.xy, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.ca = summarise(group_by(data.JF.sentiments.ca, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.ad = summarise(group_by(data.JF.sentiments.ad, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.pd = summarise(group_by(data.JF.sentiments.pd, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.vv = summarise(group_by(data.JF.sentiments.vv, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.ap = summarise(group_by(data.JF.sentiments.ap, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.pt = summarise(group_by(data.JF.sentiments.pt, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.fm = summarise(group_by(data.JF.sentiments.fm, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.pi = summarise(group_by(data.JF.sentiments.pi, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.ko = summarise(group_by(data.JF.sentiments.ko, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.pr = summarise(group_by(data.JF.sentiments.pr, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.pp = summarise(group_by(data.JF.sentiments.pp, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
 
 ############# Ordering ##############
-########### By Day and Time #########
+######### By Year, Month, Day #######
 
-all.FJ.grouped <- all.FJ.grouped[order(all.FJ.grouped$day, all.FJ.grouped$time), ]
-nn.FJ.grouped <- nn.FJ.grouped[order(nn.FJ.grouped$day, nn.FJ.grouped$time), ]
-ne.FJ.grouped <- ne.FJ.grouped[order(ne.FJ.grouped$day, ne.FJ.grouped$time), ]
-xy.FJ.grouped <- xy.FJ.grouped[order(xy.FJ.grouped$day, xy.FJ.grouped$time), ]
-ca.FJ.grouped <- ca.FJ.grouped[order(ca.FJ.grouped$day, ca.FJ.grouped$time), ]
-ad.FJ.grouped <- ad.FJ.grouped[order(ad.FJ.grouped$day, ad.FJ.grouped$time), ]
-pd.FJ.grouped <- pd.FJ.grouped[order(pd.FJ.grouped$day, pd.FJ.grouped$time), ]
-vv.FJ.grouped <- vv.FJ.grouped[order(vv.FJ.grouped$day, vv.FJ.grouped$time), ]
-ap.FJ.grouped <- ap.FJ.grouped[order(ap.FJ.grouped$day, ap.FJ.grouped$time), ]
-pt.FJ.grouped <- pt.FJ.grouped[order(pt.FJ.grouped$day, pt.FJ.grouped$time), ]
-fm.FJ.grouped <- fm.FJ.grouped[order(fm.FJ.grouped$day, fm.FJ.grouped$time), ]
-pi.FJ.grouped <- pi.FJ.grouped[order(pi.FJ.grouped$day, pi.FJ.grouped$time), ]
-ko.FJ.grouped <- ko.FJ.grouped[order(ko.FJ.grouped$day, ko.FJ.grouped$time), ]
-pr.FJ.grouped <- pr.FJ.grouped[order(pr.FJ.grouped$day, pr.FJ.grouped$time), ]
-pp.FJ.grouped <- pp.FJ.grouped[order(pp.FJ.grouped$day, pp.FJ.grouped$time), ]
+data.JF.grouped.all <- data.JF.grouped.all[order(data.JF.grouped.all$year, data.JF.grouped.all$month, data.JF.grouped.all$day), ]
+data.JF.grouped.nn <- data.JF.grouped.nn[order(data.JF.grouped.nn$year, data.JF.grouped.nn$month, data.JF.grouped.nn$day), ]
+data.JF.grouped.ne <- data.JF.grouped.ne[order(data.JF.grouped.ne$year, data.JF.grouped.ne$month, data.JF.grouped.ne$day), ]
+data.JF.grouped.xy <- data.JF.grouped.xy[order(data.JF.grouped.xy$year, data.JF.grouped.xy$month, data.JF.grouped.xy$day), ]
+data.JF.grouped.ca <- data.JF.grouped.ca[order(data.JF.grouped.ca$year, data.JF.grouped.ca$month, data.JF.grouped.ca$day), ]
+data.JF.grouped.ad <- data.JF.grouped.ad[order(data.JF.grouped.ad$year, data.JF.grouped.ad$month, data.JF.grouped.ad$day), ]
+data.JF.grouped.pd <- data.JF.grouped.pd[order(data.JF.grouped.pd$year, data.JF.grouped.pd$month, data.JF.grouped.pd$day), ]
+data.JF.grouped.vv <- data.JF.grouped.vv[order(data.JF.grouped.vv$year, data.JF.grouped.vv$month, data.JF.grouped.vv$day), ]
+data.JF.grouped.ap <- data.JF.grouped.ap[order(data.JF.grouped.ap$year, data.JF.grouped.ap$month, data.JF.grouped.ap$day), ]
+data.JF.grouped.pt <- data.JF.grouped.pt[order(data.JF.grouped.pt$year, data.JF.grouped.pt$month, data.JF.grouped.pt$day), ]
+data.JF.grouped.fm <- data.JF.grouped.fm[order(data.JF.grouped.fm$year, data.JF.grouped.fm$month, data.JF.grouped.fm$day), ]
+data.JF.grouped.pi <- data.JF.grouped.pi[order(data.JF.grouped.pi$year, data.JF.grouped.pi$month, data.JF.grouped.pi$day), ]
+data.JF.grouped.ko <- data.JF.grouped.ko[order(data.JF.grouped.ko$year, data.JF.grouped.ko$month, data.JF.grouped.ko$day), ]
+data.JF.grouped.pr <- data.JF.grouped.pr[order(data.JF.grouped.pr$year, data.JF.grouped.pr$month, data.JF.grouped.pr$day), ]
+data.JF.grouped.pp <- data.JF.grouped.pp[order(data.JF.grouped.pp$year, data.JF.grouped.pp$month, data.JF.grouped.pp$day), ]
 
 ####################################
 # -4- Saving Result
@@ -359,36 +346,709 @@ pp.FJ.grouped <- pp.FJ.grouped[order(pp.FJ.grouped$day, pp.FJ.grouped$time), ]
 
 ############### SPON ################
 
-write.csv(all.SPON.grouped, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "All", catagory), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(nn.SPON.grouped, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "NN", catagory), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(ne.SPON.grouped, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "NE", catagory), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(xy.SPON.grouped, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "XY", catagory), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(ca.SPON.grouped, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "CA", catagory), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(ad.SPON.grouped, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "AD", catagory), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(pd.SPON.grouped, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "PD", catagory), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(vv.SPON.grouped, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "VV", catagory), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(ap.SPON.grouped, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "AP", catagory), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(pt.SPON.grouped, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "PT", catagory), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(fm.SPON.grouped, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "FM", catagory), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(pi.SPON.grouped, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "PI", catagory), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(ko.SPON.grouped, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "KO", catagory), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(pr.SPON.grouped, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "PR", catagory), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(pp.SPON.grouped, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "PP", catagory), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.all, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_All", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.nn, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_NN", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ne, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_NE", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.xy, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_XY", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ca, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_CA", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ad, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_AD", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pd, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PD", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.vv, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_VV", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ap, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_AP", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pt, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PT", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.fm, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_FM", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pi, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PI", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ko, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_KO", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pr, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PR", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pp, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PP", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
 
-############### FJ ################
+############### JF ################
 
-write.csv(all.FJ.grouped, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/FJ/", "All", catagory), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(nn.FJ.grouped, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/FJ/", "NN", catagory), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(ne.FJ.grouped, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/FJ/", "NE", catagory), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(xy.FJ.grouped, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/FJ/", "XY", catagory), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(ca.FJ.grouped, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/FJ/", "CA", catagory), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(ad.FJ.grouped, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/FJ/", "AD", catagory), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(pd.FJ.grouped, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/FJ/", "PD", catagory), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(vv.FJ.grouped, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/FJ/", "VV", catagory), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(ap.FJ.grouped, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/FJ/", "AP", catagory), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(pt.FJ.grouped, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/FJ/", "PT", catagory), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(fm.FJ.grouped, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/FJ/", "FM", catagory), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(pi.FJ.grouped, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/FJ/", "PI", catagory), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(ko.FJ.grouped, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/FJ/", "KO", catagory), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(pr.FJ.grouped, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/FJ/", "PR", catagory), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(pp.FJ.grouped, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/FJ/", "PP", catagory), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.nn, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_NN", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ne, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_NE", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.xy, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_XY", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ca, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_CA", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ad, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_AD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pd, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.vv, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_VV", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ap, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_AP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pt, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PT", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.fm, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_FM", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pi, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PI", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ko, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_KO", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pr, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PR", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pp, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+
+#####################################
+############## Politik ##############
+#####################################
+
+####################################
+# -3- Result Processing
+####################################
+
+catagory = "Politik"
+
+################ SPON ###############
+
+############# Filtering #############
+########### By Catagories ###########
+
+data.SPON.filtered.all <- filter(data.SPON.sentiments.all, grepl(catagory, data.SPON.sentiments.all$cats))
+data.SPON.filtered.nn <- filter(data.SPON.sentiments.nn, grepl(catagory, data.SPON.sentiments.nn$cats))
+data.SPON.filtered.ne <- filter(data.SPON.sentiments.ne, grepl(catagory, data.SPON.sentiments.ne$cats))
+data.SPON.filtered.xy <- filter(data.SPON.sentiments.xy, grepl(catagory, data.SPON.sentiments.xy$cats))
+data.SPON.filtered.ca <- filter(data.SPON.sentiments.ca, grepl(catagory, data.SPON.sentiments.ca$cats))
+data.SPON.filtered.ad <- filter(data.SPON.sentiments.ad, grepl(catagory, data.SPON.sentiments.ad$cats))
+data.SPON.filtered.pd <- filter(data.SPON.sentiments.pd, grepl(catagory, data.SPON.sentiments.pd$cats))
+data.SPON.filtered.vv <- filter(data.SPON.sentiments.vv, grepl(catagory, data.SPON.sentiments.vv$cats))
+data.SPON.filtered.ap <- filter(data.SPON.sentiments.ap, grepl(catagory, data.SPON.sentiments.ap$cats))
+data.SPON.filtered.pt <- filter(data.SPON.sentiments.pt, grepl(catagory, data.SPON.sentiments.pt$cats))
+data.SPON.filtered.fm <- filter(data.SPON.sentiments.fm, grepl(catagory, data.SPON.sentiments.fm$cats))
+data.SPON.filtered.pi <- filter(data.SPON.sentiments.pi, grepl(catagory, data.SPON.sentiments.pi$cats))
+data.SPON.filtered.ko <- filter(data.SPON.sentiments.ko, grepl(catagory, data.SPON.sentiments.ko$cats))
+data.SPON.filtered.pr <- filter(data.SPON.sentiments.pr, grepl(catagory, data.SPON.sentiments.pr$cats))
+data.SPON.filtered.pp <- filter(data.SPON.sentiments.pp, grepl(catagory, data.SPON.sentiments.pp$cats))
+
+############# Grouping ##############
+######### By Year, Month, Day #######
+
+data.SPON.grouped.all = summarise(group_by(data.SPON.filtered.all, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.nn = summarise(group_by(data.SPON.filtered.nn, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.ne = summarise(group_by(data.SPON.filtered.ne, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.xy = summarise(group_by(data.SPON.filtered.xy, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.ca = summarise(group_by(data.SPON.filtered.ca, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.ad = summarise(group_by(data.SPON.filtered.ad, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.pd = summarise(group_by(data.SPON.filtered.pd, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.vv = summarise(group_by(data.SPON.filtered.vv, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.ap = summarise(group_by(data.SPON.filtered.ap, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.pt = summarise(group_by(data.SPON.filtered.pt, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.fm = summarise(group_by(data.SPON.filtered.fm, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.pi = summarise(group_by(data.SPON.filtered.pi, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.ko = summarise(group_by(data.SPON.filtered.ko, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.pr = summarise(group_by(data.SPON.filtered.pr, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.pp = summarise(group_by(data.SPON.filtered.pp, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+
+############# Ordering ##############
+########### By Day and Time #########
+
+data.SPON.grouped.all <- data.SPON.grouped.all[order(data.SPON.grouped.all$year, data.SPON.grouped.all$month, data.SPON.grouped.all$day), ]
+data.SPON.grouped.nn <- data.SPON.grouped.nn[order(data.SPON.grouped.nn$year, data.SPON.grouped.nn$month, data.SPON.grouped.nn$day), ]
+data.SPON.grouped.ne <- data.SPON.grouped.ne[order(data.SPON.grouped.ne$year, data.SPON.grouped.ne$month, data.SPON.grouped.ne$day), ]
+data.SPON.grouped.xy <- data.SPON.grouped.xy[order(data.SPON.grouped.xy$year, data.SPON.grouped.xy$month, data.SPON.grouped.xy$day), ]
+data.SPON.grouped.ca <- data.SPON.grouped.ca[order(data.SPON.grouped.ca$year, data.SPON.grouped.ca$month, data.SPON.grouped.ca$day), ]
+data.SPON.grouped.ad <- data.SPON.grouped.ad[order(data.SPON.grouped.ad$year, data.SPON.grouped.ad$month, data.SPON.grouped.ad$day), ]
+data.SPON.grouped.pd <- data.SPON.grouped.pd[order(data.SPON.grouped.pd$year, data.SPON.grouped.pd$month, data.SPON.grouped.pd$day), ]
+data.SPON.grouped.vv <- data.SPON.grouped.vv[order(data.SPON.grouped.vv$year, data.SPON.grouped.vv$month, data.SPON.grouped.vv$day), ]
+data.SPON.grouped.ap <- data.SPON.grouped.ap[order(data.SPON.grouped.ap$year, data.SPON.grouped.ap$month, data.SPON.grouped.ap$day), ]
+data.SPON.grouped.pt <- data.SPON.grouped.pt[order(data.SPON.grouped.pt$year, data.SPON.grouped.pt$month, data.SPON.grouped.pt$day), ]
+data.SPON.grouped.fm <- data.SPON.grouped.fm[order(data.SPON.grouped.fm$year, data.SPON.grouped.fm$month, data.SPON.grouped.fm$day), ]
+data.SPON.grouped.pi <- data.SPON.grouped.pi[order(data.SPON.grouped.pi$year, data.SPON.grouped.pi$month, data.SPON.grouped.pi$day), ]
+data.SPON.grouped.ko <- data.SPON.grouped.ko[order(data.SPON.grouped.ko$year, data.SPON.grouped.ko$month, data.SPON.grouped.ko$day), ]
+data.SPON.grouped.pr <- data.SPON.grouped.pr[order(data.SPON.grouped.pr$year, data.SPON.grouped.pr$month, data.SPON.grouped.pr$day), ]
+data.SPON.grouped.pp <- data.SPON.grouped.pp[order(data.SPON.grouped.pp$year, data.SPON.grouped.pp$month, data.SPON.grouped.pp$day), ]
+
+############### JF ################
+
+############# Filtering #############
+########### By Catagories ###########
+
+data.JF.filtered.all <- filter(data.JF.sentiments.all, grepl(catagory, data.JF.sentiments.all$cats))
+data.JF.filtered.nn <- filter(data.JF.sentiments.nn, grepl(catagory, data.JF.sentiments.nn$cats))
+data.JF.filtered.ne <- filter(data.JF.sentiments.ne, grepl(catagory, data.JF.sentiments.ne$cats))
+data.JF.filtered.xy <- filter(data.JF.sentiments.xy, grepl(catagory, data.JF.sentiments.xy$cats))
+data.JF.filtered.ca <- filter(data.JF.sentiments.ca, grepl(catagory, data.JF.sentiments.ca$cats))
+data.JF.filtered.ad <- filter(data.JF.sentiments.ad, grepl(catagory, data.JF.sentiments.ad$cats))
+data.JF.filtered.pd <- filter(data.JF.sentiments.pd, grepl(catagory, data.JF.sentiments.pd$cats))
+data.JF.filtered.vv <- filter(data.JF.sentiments.vv, grepl(catagory, data.JF.sentiments.vv$cats))
+data.JF.filtered.ap <- filter(data.JF.sentiments.ap, grepl(catagory, data.JF.sentiments.ap$cats))
+data.JF.filtered.pt <- filter(data.JF.sentiments.pt, grepl(catagory, data.JF.sentiments.pt$cats))
+data.JF.filtered.fm <- filter(data.JF.sentiments.fm, grepl(catagory, data.JF.sentiments.fm$cats))
+data.JF.filtered.pi <- filter(data.JF.sentiments.pi, grepl(catagory, data.JF.sentiments.pi$cats))
+data.JF.filtered.ko <- filter(data.JF.sentiments.ko, grepl(catagory, data.JF.sentiments.ko$cats))
+data.JF.filtered.pr <- filter(data.JF.sentiments.pr, grepl(catagory, data.JF.sentiments.pr$cats))
+data.JF.filtered.pp <- filter(data.JF.sentiments.pp, grepl(catagory, data.JF.sentiments.pp$cats))
+
+############# Grouping ##############
+######### By Year, Month, Day #######
+
+data.JF.grouped.all = summarise(group_by(data.JF.filtered.all, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.nn = summarise(group_by(data.JF.filtered.nn, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.ne = summarise(group_by(data.JF.filtered.ne, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.xy = summarise(group_by(data.JF.filtered.xy, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.ca = summarise(group_by(data.JF.filtered.ca, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.ad = summarise(group_by(data.JF.filtered.ad, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.pd = summarise(group_by(data.JF.filtered.pd, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.vv = summarise(group_by(data.JF.filtered.vv, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.ap = summarise(group_by(data.JF.filtered.ap, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.pt = summarise(group_by(data.JF.filtered.pt, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.fm = summarise(group_by(data.JF.filtered.fm, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.pi = summarise(group_by(data.JF.filtered.pi, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.ko = summarise(group_by(data.JF.filtered.ko, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.pr = summarise(group_by(data.JF.filtered.pr, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.pp = summarise(group_by(data.JF.filtered.pp, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+
+############# Ordering ##############
+######### By Year, Month, Day #######
+
+data.JF.grouped.all <- data.JF.grouped.all[order(data.JF.grouped.all$year, data.JF.grouped.all$month, data.JF.grouped.all$day), ]
+data.JF.grouped.nn <- data.JF.grouped.nn[order(data.JF.grouped.nn$year, data.JF.grouped.nn$month, data.JF.grouped.nn$day), ]
+data.JF.grouped.ne <- data.JF.grouped.ne[order(data.JF.grouped.ne$year, data.JF.grouped.ne$month, data.JF.grouped.ne$day), ]
+data.JF.grouped.xy <- data.JF.grouped.xy[order(data.JF.grouped.xy$year, data.JF.grouped.xy$month, data.JF.grouped.xy$day), ]
+data.JF.grouped.ca <- data.JF.grouped.ca[order(data.JF.grouped.ca$year, data.JF.grouped.ca$month, data.JF.grouped.ca$day), ]
+data.JF.grouped.ad <- data.JF.grouped.ad[order(data.JF.grouped.ad$year, data.JF.grouped.ad$month, data.JF.grouped.ad$day), ]
+data.JF.grouped.pd <- data.JF.grouped.pd[order(data.JF.grouped.pd$year, data.JF.grouped.pd$month, data.JF.grouped.pd$day), ]
+data.JF.grouped.vv <- data.JF.grouped.vv[order(data.JF.grouped.vv$year, data.JF.grouped.vv$month, data.JF.grouped.vv$day), ]
+data.JF.grouped.ap <- data.JF.grouped.ap[order(data.JF.grouped.ap$year, data.JF.grouped.ap$month, data.JF.grouped.ap$day), ]
+data.JF.grouped.pt <- data.JF.grouped.pt[order(data.JF.grouped.pt$year, data.JF.grouped.pt$month, data.JF.grouped.pt$day), ]
+data.JF.grouped.fm <- data.JF.grouped.fm[order(data.JF.grouped.fm$year, data.JF.grouped.fm$month, data.JF.grouped.fm$day), ]
+data.JF.grouped.pi <- data.JF.grouped.pi[order(data.JF.grouped.pi$year, data.JF.grouped.pi$month, data.JF.grouped.pi$day), ]
+data.JF.grouped.ko <- data.JF.grouped.ko[order(data.JF.grouped.ko$year, data.JF.grouped.ko$month, data.JF.grouped.ko$day), ]
+data.JF.grouped.pr <- data.JF.grouped.pr[order(data.JF.grouped.pr$year, data.JF.grouped.pr$month, data.JF.grouped.pr$day), ]
+data.JF.grouped.pp <- data.JF.grouped.pp[order(data.JF.grouped.pp$year, data.JF.grouped.pp$month, data.JF.grouped.pp$day), ]
+
+####################################
+# -4- Saving Result
+####################################
+
+############### SPON ################
+
+write.csv(data.SPON.grouped.all, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_All", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.nn, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_NN", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ne, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_NE", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.xy, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_XY", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ca, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_CA", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ad, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_AD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pd, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.vv, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_VV", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ap, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_AP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pt, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PT", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.fm, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_FM", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pi, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PI", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ko, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_KO", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pr, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PR", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pp, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+
+############### JF ################
+
+write.csv(data.JF.grouped.nn, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_NN", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ne, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_NE", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.xy, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_XY", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ca, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_CA", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ad, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_AD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pd, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.vv, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_VV", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ap, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_AP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pt, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PT", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.fm, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_FM", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pi, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PI", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ko, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_KO", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pr, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PR", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pp, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+
+#####################################
+############## Kultur ###############
+#####################################
+
+####################################
+# -3- Result Processing
+####################################
+
+catagory = "Kultur"
+
+################ SPON ###############
+
+############# Filtering #############
+########### By Catagories ###########
+
+data.SPON.filtered.all <- filter(data.SPON.sentiments.all, grepl(catagory, data.SPON.sentiments.all$cats))
+data.SPON.filtered.nn <- filter(data.SPON.sentiments.nn, grepl(catagory, data.SPON.sentiments.nn$cats))
+data.SPON.filtered.ne <- filter(data.SPON.sentiments.ne, grepl(catagory, data.SPON.sentiments.ne$cats))
+data.SPON.filtered.xy <- filter(data.SPON.sentiments.xy, grepl(catagory, data.SPON.sentiments.xy$cats))
+data.SPON.filtered.ca <- filter(data.SPON.sentiments.ca, grepl(catagory, data.SPON.sentiments.ca$cats))
+data.SPON.filtered.ad <- filter(data.SPON.sentiments.ad, grepl(catagory, data.SPON.sentiments.ad$cats))
+data.SPON.filtered.pd <- filter(data.SPON.sentiments.pd, grepl(catagory, data.SPON.sentiments.pd$cats))
+data.SPON.filtered.vv <- filter(data.SPON.sentiments.vv, grepl(catagory, data.SPON.sentiments.vv$cats))
+data.SPON.filtered.ap <- filter(data.SPON.sentiments.ap, grepl(catagory, data.SPON.sentiments.ap$cats))
+data.SPON.filtered.pt <- filter(data.SPON.sentiments.pt, grepl(catagory, data.SPON.sentiments.pt$cats))
+data.SPON.filtered.fm <- filter(data.SPON.sentiments.fm, grepl(catagory, data.SPON.sentiments.fm$cats))
+data.SPON.filtered.pi <- filter(data.SPON.sentiments.pi, grepl(catagory, data.SPON.sentiments.pi$cats))
+data.SPON.filtered.ko <- filter(data.SPON.sentiments.ko, grepl(catagory, data.SPON.sentiments.ko$cats))
+data.SPON.filtered.pr <- filter(data.SPON.sentiments.pr, grepl(catagory, data.SPON.sentiments.pr$cats))
+data.SPON.filtered.pp <- filter(data.SPON.sentiments.pp, grepl(catagory, data.SPON.sentiments.pp$cats))
+
+############# Grouping ##############
+######### By Year, Month, Day #######
+
+data.SPON.grouped.all = summarise(group_by(data.SPON.filtered.all, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.nn = summarise(group_by(data.SPON.filtered.nn, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.ne = summarise(group_by(data.SPON.filtered.ne, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.xy = summarise(group_by(data.SPON.filtered.xy, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.ca = summarise(group_by(data.SPON.filtered.ca, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.ad = summarise(group_by(data.SPON.filtered.ad, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.pd = summarise(group_by(data.SPON.filtered.pd, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.vv = summarise(group_by(data.SPON.filtered.vv, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.ap = summarise(group_by(data.SPON.filtered.ap, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.pt = summarise(group_by(data.SPON.filtered.pt, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.fm = summarise(group_by(data.SPON.filtered.fm, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.pi = summarise(group_by(data.SPON.filtered.pi, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.ko = summarise(group_by(data.SPON.filtered.ko, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.pr = summarise(group_by(data.SPON.filtered.pr, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.pp = summarise(group_by(data.SPON.filtered.pp, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+
+############# Ordering ##############
+########### By Day and Time #########
+
+data.SPON.grouped.all <- data.SPON.grouped.all[order(data.SPON.grouped.all$year, data.SPON.grouped.all$month, data.SPON.grouped.all$day), ]
+data.SPON.grouped.nn <- data.SPON.grouped.nn[order(data.SPON.grouped.nn$year, data.SPON.grouped.nn$month, data.SPON.grouped.nn$day), ]
+data.SPON.grouped.ne <- data.SPON.grouped.ne[order(data.SPON.grouped.ne$year, data.SPON.grouped.ne$month, data.SPON.grouped.ne$day), ]
+data.SPON.grouped.xy <- data.SPON.grouped.xy[order(data.SPON.grouped.xy$year, data.SPON.grouped.xy$month, data.SPON.grouped.xy$day), ]
+data.SPON.grouped.ca <- data.SPON.grouped.ca[order(data.SPON.grouped.ca$year, data.SPON.grouped.ca$month, data.SPON.grouped.ca$day), ]
+data.SPON.grouped.ad <- data.SPON.grouped.ad[order(data.SPON.grouped.ad$year, data.SPON.grouped.ad$month, data.SPON.grouped.ad$day), ]
+data.SPON.grouped.pd <- data.SPON.grouped.pd[order(data.SPON.grouped.pd$year, data.SPON.grouped.pd$month, data.SPON.grouped.pd$day), ]
+data.SPON.grouped.vv <- data.SPON.grouped.vv[order(data.SPON.grouped.vv$year, data.SPON.grouped.vv$month, data.SPON.grouped.vv$day), ]
+data.SPON.grouped.ap <- data.SPON.grouped.ap[order(data.SPON.grouped.ap$year, data.SPON.grouped.ap$month, data.SPON.grouped.ap$day), ]
+data.SPON.grouped.pt <- data.SPON.grouped.pt[order(data.SPON.grouped.pt$year, data.SPON.grouped.pt$month, data.SPON.grouped.pt$day), ]
+data.SPON.grouped.fm <- data.SPON.grouped.fm[order(data.SPON.grouped.fm$year, data.SPON.grouped.fm$month, data.SPON.grouped.fm$day), ]
+data.SPON.grouped.pi <- data.SPON.grouped.pi[order(data.SPON.grouped.pi$year, data.SPON.grouped.pi$month, data.SPON.grouped.pi$day), ]
+data.SPON.grouped.ko <- data.SPON.grouped.ko[order(data.SPON.grouped.ko$year, data.SPON.grouped.ko$month, data.SPON.grouped.ko$day), ]
+data.SPON.grouped.pr <- data.SPON.grouped.pr[order(data.SPON.grouped.pr$year, data.SPON.grouped.pr$month, data.SPON.grouped.pr$day), ]
+data.SPON.grouped.pp <- data.SPON.grouped.pp[order(data.SPON.grouped.pp$year, data.SPON.grouped.pp$month, data.SPON.grouped.pp$day), ]
+
+############### JF ################
+
+############# Filtering #############
+########### By Catagories ###########
+
+data.JF.filtered.all <- filter(data.JF.sentiments.all, grepl(catagory, data.JF.sentiments.all$cats))
+data.JF.filtered.nn <- filter(data.JF.sentiments.nn, grepl(catagory, data.JF.sentiments.nn$cats))
+data.JF.filtered.ne <- filter(data.JF.sentiments.ne, grepl(catagory, data.JF.sentiments.ne$cats))
+data.JF.filtered.xy <- filter(data.JF.sentiments.xy, grepl(catagory, data.JF.sentiments.xy$cats))
+data.JF.filtered.ca <- filter(data.JF.sentiments.ca, grepl(catagory, data.JF.sentiments.ca$cats))
+data.JF.filtered.ad <- filter(data.JF.sentiments.ad, grepl(catagory, data.JF.sentiments.ad$cats))
+data.JF.filtered.pd <- filter(data.JF.sentiments.pd, grepl(catagory, data.JF.sentiments.pd$cats))
+data.JF.filtered.vv <- filter(data.JF.sentiments.vv, grepl(catagory, data.JF.sentiments.vv$cats))
+data.JF.filtered.ap <- filter(data.JF.sentiments.ap, grepl(catagory, data.JF.sentiments.ap$cats))
+data.JF.filtered.pt <- filter(data.JF.sentiments.pt, grepl(catagory, data.JF.sentiments.pt$cats))
+data.JF.filtered.fm <- filter(data.JF.sentiments.fm, grepl(catagory, data.JF.sentiments.fm$cats))
+data.JF.filtered.pi <- filter(data.JF.sentiments.pi, grepl(catagory, data.JF.sentiments.pi$cats))
+data.JF.filtered.ko <- filter(data.JF.sentiments.ko, grepl(catagory, data.JF.sentiments.ko$cats))
+data.JF.filtered.pr <- filter(data.JF.sentiments.pr, grepl(catagory, data.JF.sentiments.pr$cats))
+data.JF.filtered.pp <- filter(data.JF.sentiments.pp, grepl(catagory, data.JF.sentiments.pp$cats))
+
+############# Grouping ##############
+######### By Year, Month, Day #######
+
+data.JF.grouped.all = summarise(group_by(data.JF.filtered.all, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.nn = summarise(group_by(data.JF.filtered.nn, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.ne = summarise(group_by(data.JF.filtered.ne, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.xy = summarise(group_by(data.JF.filtered.xy, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.ca = summarise(group_by(data.JF.filtered.ca, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.ad = summarise(group_by(data.JF.filtered.ad, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.pd = summarise(group_by(data.JF.filtered.pd, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.vv = summarise(group_by(data.JF.filtered.vv, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.ap = summarise(group_by(data.JF.filtered.ap, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.pt = summarise(group_by(data.JF.filtered.pt, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.fm = summarise(group_by(data.JF.filtered.fm, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.pi = summarise(group_by(data.JF.filtered.pi, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.ko = summarise(group_by(data.JF.filtered.ko, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.pr = summarise(group_by(data.JF.filtered.pr, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.pp = summarise(group_by(data.JF.filtered.pp, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+
+############# Ordering ##############
+######### By Year, Month, Day #######
+
+data.JF.grouped.all <- data.JF.grouped.all[order(data.JF.grouped.all$year, data.JF.grouped.all$month, data.JF.grouped.all$day), ]
+data.JF.grouped.nn <- data.JF.grouped.nn[order(data.JF.grouped.nn$year, data.JF.grouped.nn$month, data.JF.grouped.nn$day), ]
+data.JF.grouped.ne <- data.JF.grouped.ne[order(data.JF.grouped.ne$year, data.JF.grouped.ne$month, data.JF.grouped.ne$day), ]
+data.JF.grouped.xy <- data.JF.grouped.xy[order(data.JF.grouped.xy$year, data.JF.grouped.xy$month, data.JF.grouped.xy$day), ]
+data.JF.grouped.ca <- data.JF.grouped.ca[order(data.JF.grouped.ca$year, data.JF.grouped.ca$month, data.JF.grouped.ca$day), ]
+data.JF.grouped.ad <- data.JF.grouped.ad[order(data.JF.grouped.ad$year, data.JF.grouped.ad$month, data.JF.grouped.ad$day), ]
+data.JF.grouped.pd <- data.JF.grouped.pd[order(data.JF.grouped.pd$year, data.JF.grouped.pd$month, data.JF.grouped.pd$day), ]
+data.JF.grouped.vv <- data.JF.grouped.vv[order(data.JF.grouped.vv$year, data.JF.grouped.vv$month, data.JF.grouped.vv$day), ]
+data.JF.grouped.ap <- data.JF.grouped.ap[order(data.JF.grouped.ap$year, data.JF.grouped.ap$month, data.JF.grouped.ap$day), ]
+data.JF.grouped.pt <- data.JF.grouped.pt[order(data.JF.grouped.pt$year, data.JF.grouped.pt$month, data.JF.grouped.pt$day), ]
+data.JF.grouped.fm <- data.JF.grouped.fm[order(data.JF.grouped.fm$year, data.JF.grouped.fm$month, data.JF.grouped.fm$day), ]
+data.JF.grouped.pi <- data.JF.grouped.pi[order(data.JF.grouped.pi$year, data.JF.grouped.pi$month, data.JF.grouped.pi$day), ]
+data.JF.grouped.ko <- data.JF.grouped.ko[order(data.JF.grouped.ko$year, data.JF.grouped.ko$month, data.JF.grouped.ko$day), ]
+data.JF.grouped.pr <- data.JF.grouped.pr[order(data.JF.grouped.pr$year, data.JF.grouped.pr$month, data.JF.grouped.pr$day), ]
+data.JF.grouped.pp <- data.JF.grouped.pp[order(data.JF.grouped.pp$year, data.JF.grouped.pp$month, data.JF.grouped.pp$day), ]
+
+####################################
+# -4- Saving Result
+####################################
+
+############### SPON ################
+
+write.csv(data.SPON.grouped.all, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_All", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.nn, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_NN", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ne, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_NE", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.xy, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_XY", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ca, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_CA", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ad, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_AD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pd, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.vv, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_VV", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ap, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_AP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pt, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PT", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.fm, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_FM", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pi, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PI", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ko, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_KO", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pr, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PR", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pp, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+
+############### JF ################
+
+write.csv(data.JF.grouped.nn, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_NN", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ne, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_NE", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.xy, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_XY", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ca, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_CA", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ad, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_AD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pd, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.vv, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_VV", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ap, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_AP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pt, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PT", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.fm, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_FM", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pi, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PI", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ko, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_KO", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pr, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PR", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pp, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+
+
+#####################################
+############ Wirtschaft #############
+#####################################
+
+####################################
+# -3- Result Processing
+####################################
+
+catagory = "Wirtschaft"
+
+################ SPON ###############
+
+############# Filtering #############
+########### By Catagories ###########
+
+data.SPON.filtered.all <- filter(data.SPON.sentiments.all, grepl(catagory, data.SPON.sentiments.all$cats))
+data.SPON.filtered.nn <- filter(data.SPON.sentiments.nn, grepl(catagory, data.SPON.sentiments.nn$cats))
+data.SPON.filtered.ne <- filter(data.SPON.sentiments.ne, grepl(catagory, data.SPON.sentiments.ne$cats))
+data.SPON.filtered.xy <- filter(data.SPON.sentiments.xy, grepl(catagory, data.SPON.sentiments.xy$cats))
+data.SPON.filtered.ca <- filter(data.SPON.sentiments.ca, grepl(catagory, data.SPON.sentiments.ca$cats))
+data.SPON.filtered.ad <- filter(data.SPON.sentiments.ad, grepl(catagory, data.SPON.sentiments.ad$cats))
+data.SPON.filtered.pd <- filter(data.SPON.sentiments.pd, grepl(catagory, data.SPON.sentiments.pd$cats))
+data.SPON.filtered.vv <- filter(data.SPON.sentiments.vv, grepl(catagory, data.SPON.sentiments.vv$cats))
+data.SPON.filtered.ap <- filter(data.SPON.sentiments.ap, grepl(catagory, data.SPON.sentiments.ap$cats))
+data.SPON.filtered.pt <- filter(data.SPON.sentiments.pt, grepl(catagory, data.SPON.sentiments.pt$cats))
+data.SPON.filtered.fm <- filter(data.SPON.sentiments.fm, grepl(catagory, data.SPON.sentiments.fm$cats))
+data.SPON.filtered.pi <- filter(data.SPON.sentiments.pi, grepl(catagory, data.SPON.sentiments.pi$cats))
+data.SPON.filtered.ko <- filter(data.SPON.sentiments.ko, grepl(catagory, data.SPON.sentiments.ko$cats))
+data.SPON.filtered.pr <- filter(data.SPON.sentiments.pr, grepl(catagory, data.SPON.sentiments.pr$cats))
+data.SPON.filtered.pp <- filter(data.SPON.sentiments.pp, grepl(catagory, data.SPON.sentiments.pp$cats))
+
+############# Grouping ##############
+######### By Year, Month, Day #######
+
+data.SPON.grouped.all = summarise(group_by(data.SPON.filtered.all, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.nn = summarise(group_by(data.SPON.filtered.nn, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.ne = summarise(group_by(data.SPON.filtered.ne, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.xy = summarise(group_by(data.SPON.filtered.xy, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.ca = summarise(group_by(data.SPON.filtered.ca, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.ad = summarise(group_by(data.SPON.filtered.ad, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.pd = summarise(group_by(data.SPON.filtered.pd, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.vv = summarise(group_by(data.SPON.filtered.vv, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.ap = summarise(group_by(data.SPON.filtered.ap, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.pt = summarise(group_by(data.SPON.filtered.pt, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.fm = summarise(group_by(data.SPON.filtered.fm, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.pi = summarise(group_by(data.SPON.filtered.pi, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.ko = summarise(group_by(data.SPON.filtered.ko, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.pr = summarise(group_by(data.SPON.filtered.pr, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.pp = summarise(group_by(data.SPON.filtered.pp, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+
+############# Ordering ##############
+########### By Day and Time #########
+
+data.SPON.grouped.all <- data.SPON.grouped.all[order(data.SPON.grouped.all$year, data.SPON.grouped.all$month, data.SPON.grouped.all$day), ]
+data.SPON.grouped.nn <- data.SPON.grouped.nn[order(data.SPON.grouped.nn$year, data.SPON.grouped.nn$month, data.SPON.grouped.nn$day), ]
+data.SPON.grouped.ne <- data.SPON.grouped.ne[order(data.SPON.grouped.ne$year, data.SPON.grouped.ne$month, data.SPON.grouped.ne$day), ]
+data.SPON.grouped.xy <- data.SPON.grouped.xy[order(data.SPON.grouped.xy$year, data.SPON.grouped.xy$month, data.SPON.grouped.xy$day), ]
+data.SPON.grouped.ca <- data.SPON.grouped.ca[order(data.SPON.grouped.ca$year, data.SPON.grouped.ca$month, data.SPON.grouped.ca$day), ]
+data.SPON.grouped.ad <- data.SPON.grouped.ad[order(data.SPON.grouped.ad$year, data.SPON.grouped.ad$month, data.SPON.grouped.ad$day), ]
+data.SPON.grouped.pd <- data.SPON.grouped.pd[order(data.SPON.grouped.pd$year, data.SPON.grouped.pd$month, data.SPON.grouped.pd$day), ]
+data.SPON.grouped.vv <- data.SPON.grouped.vv[order(data.SPON.grouped.vv$year, data.SPON.grouped.vv$month, data.SPON.grouped.vv$day), ]
+data.SPON.grouped.ap <- data.SPON.grouped.ap[order(data.SPON.grouped.ap$year, data.SPON.grouped.ap$month, data.SPON.grouped.ap$day), ]
+data.SPON.grouped.pt <- data.SPON.grouped.pt[order(data.SPON.grouped.pt$year, data.SPON.grouped.pt$month, data.SPON.grouped.pt$day), ]
+data.SPON.grouped.fm <- data.SPON.grouped.fm[order(data.SPON.grouped.fm$year, data.SPON.grouped.fm$month, data.SPON.grouped.fm$day), ]
+data.SPON.grouped.pi <- data.SPON.grouped.pi[order(data.SPON.grouped.pi$year, data.SPON.grouped.pi$month, data.SPON.grouped.pi$day), ]
+data.SPON.grouped.ko <- data.SPON.grouped.ko[order(data.SPON.grouped.ko$year, data.SPON.grouped.ko$month, data.SPON.grouped.ko$day), ]
+data.SPON.grouped.pr <- data.SPON.grouped.pr[order(data.SPON.grouped.pr$year, data.SPON.grouped.pr$month, data.SPON.grouped.pr$day), ]
+data.SPON.grouped.pp <- data.SPON.grouped.pp[order(data.SPON.grouped.pp$year, data.SPON.grouped.pp$month, data.SPON.grouped.pp$day), ]
+
+############### JF ################
+
+############# Filtering #############
+########### By Catagories ###########
+
+data.JF.filtered.all <- filter(data.JF.sentiments.all, grepl(catagory, data.JF.sentiments.all$cats))
+data.JF.filtered.nn <- filter(data.JF.sentiments.nn, grepl(catagory, data.JF.sentiments.nn$cats))
+data.JF.filtered.ne <- filter(data.JF.sentiments.ne, grepl(catagory, data.JF.sentiments.ne$cats))
+data.JF.filtered.xy <- filter(data.JF.sentiments.xy, grepl(catagory, data.JF.sentiments.xy$cats))
+data.JF.filtered.ca <- filter(data.JF.sentiments.ca, grepl(catagory, data.JF.sentiments.ca$cats))
+data.JF.filtered.ad <- filter(data.JF.sentiments.ad, grepl(catagory, data.JF.sentiments.ad$cats))
+data.JF.filtered.pd <- filter(data.JF.sentiments.pd, grepl(catagory, data.JF.sentiments.pd$cats))
+data.JF.filtered.vv <- filter(data.JF.sentiments.vv, grepl(catagory, data.JF.sentiments.vv$cats))
+data.JF.filtered.ap <- filter(data.JF.sentiments.ap, grepl(catagory, data.JF.sentiments.ap$cats))
+data.JF.filtered.pt <- filter(data.JF.sentiments.pt, grepl(catagory, data.JF.sentiments.pt$cats))
+data.JF.filtered.fm <- filter(data.JF.sentiments.fm, grepl(catagory, data.JF.sentiments.fm$cats))
+data.JF.filtered.pi <- filter(data.JF.sentiments.pi, grepl(catagory, data.JF.sentiments.pi$cats))
+data.JF.filtered.ko <- filter(data.JF.sentiments.ko, grepl(catagory, data.JF.sentiments.ko$cats))
+data.JF.filtered.pr <- filter(data.JF.sentiments.pr, grepl(catagory, data.JF.sentiments.pr$cats))
+data.JF.filtered.pp <- filter(data.JF.sentiments.pp, grepl(catagory, data.JF.sentiments.pp$cats))
+
+############# Grouping ##############
+######### By Year, Month, Day #######
+
+data.JF.grouped.all = summarise(group_by(data.JF.filtered.all, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.nn = summarise(group_by(data.JF.filtered.nn, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.ne = summarise(group_by(data.JF.filtered.ne, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.xy = summarise(group_by(data.JF.filtered.xy, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.ca = summarise(group_by(data.JF.filtered.ca, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.ad = summarise(group_by(data.JF.filtered.ad, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.pd = summarise(group_by(data.JF.filtered.pd, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.vv = summarise(group_by(data.JF.filtered.vv, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.ap = summarise(group_by(data.JF.filtered.ap, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.pt = summarise(group_by(data.JF.filtered.pt, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.fm = summarise(group_by(data.JF.filtered.fm, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.pi = summarise(group_by(data.JF.filtered.pi, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.ko = summarise(group_by(data.JF.filtered.ko, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.pr = summarise(group_by(data.JF.filtered.pr, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.pp = summarise(group_by(data.JF.filtered.pp, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+
+############# Ordering ##############
+######### By Year, Month, Day #######
+
+data.JF.grouped.all <- data.JF.grouped.all[order(data.JF.grouped.all$year, data.JF.grouped.all$month, data.JF.grouped.all$day), ]
+data.JF.grouped.nn <- data.JF.grouped.nn[order(data.JF.grouped.nn$year, data.JF.grouped.nn$month, data.JF.grouped.nn$day), ]
+data.JF.grouped.ne <- data.JF.grouped.ne[order(data.JF.grouped.ne$year, data.JF.grouped.ne$month, data.JF.grouped.ne$day), ]
+data.JF.grouped.xy <- data.JF.grouped.xy[order(data.JF.grouped.xy$year, data.JF.grouped.xy$month, data.JF.grouped.xy$day), ]
+data.JF.grouped.ca <- data.JF.grouped.ca[order(data.JF.grouped.ca$year, data.JF.grouped.ca$month, data.JF.grouped.ca$day), ]
+data.JF.grouped.ad <- data.JF.grouped.ad[order(data.JF.grouped.ad$year, data.JF.grouped.ad$month, data.JF.grouped.ad$day), ]
+data.JF.grouped.pd <- data.JF.grouped.pd[order(data.JF.grouped.pd$year, data.JF.grouped.pd$month, data.JF.grouped.pd$day), ]
+data.JF.grouped.vv <- data.JF.grouped.vv[order(data.JF.grouped.vv$year, data.JF.grouped.vv$month, data.JF.grouped.vv$day), ]
+data.JF.grouped.ap <- data.JF.grouped.ap[order(data.JF.grouped.ap$year, data.JF.grouped.ap$month, data.JF.grouped.ap$day), ]
+data.JF.grouped.pt <- data.JF.grouped.pt[order(data.JF.grouped.pt$year, data.JF.grouped.pt$month, data.JF.grouped.pt$day), ]
+data.JF.grouped.fm <- data.JF.grouped.fm[order(data.JF.grouped.fm$year, data.JF.grouped.fm$month, data.JF.grouped.fm$day), ]
+data.JF.grouped.pi <- data.JF.grouped.pi[order(data.JF.grouped.pi$year, data.JF.grouped.pi$month, data.JF.grouped.pi$day), ]
+data.JF.grouped.ko <- data.JF.grouped.ko[order(data.JF.grouped.ko$year, data.JF.grouped.ko$month, data.JF.grouped.ko$day), ]
+data.JF.grouped.pr <- data.JF.grouped.pr[order(data.JF.grouped.pr$year, data.JF.grouped.pr$month, data.JF.grouped.pr$day), ]
+data.JF.grouped.pp <- data.JF.grouped.pp[order(data.JF.grouped.pp$year, data.JF.grouped.pp$month, data.JF.grouped.pp$day), ]
+
+####################################
+# -4- Saving Result
+####################################
+
+############### SPON ################
+
+write.csv(data.SPON.grouped.all, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_All", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.nn, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_NN", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ne, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_NE", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.xy, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_XY", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ca, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_CA", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ad, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_AD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pd, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.vv, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_VV", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ap, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_AP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pt, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PT", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.fm, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_FM", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pi, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PI", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ko, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_KO", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pr, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PR", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pp, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+
+############### JF ################
+
+write.csv(data.JF.grouped.nn, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_NN", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ne, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_NE", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.xy, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_XY", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ca, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_CA", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ad, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_AD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pd, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.vv, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_VV", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ap, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_AP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pt, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PT", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.fm, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_FM", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pi, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PI", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ko, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_KO", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pr, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PR", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pp, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+
+#####################################
+############## Meinung ##############
+#####################################
+
+####################################
+# -3- Result Processing
+####################################
+
+catagory = "Meinung"
+
+################ SPON ###############
+
+############# Filtering #############
+########### By Catagories ###########
+
+data.SPON.filtered.all <- filter(data.SPON.sentiments.all, grepl(catagory, data.SPON.sentiments.all$cats))
+data.SPON.filtered.nn <- filter(data.SPON.sentiments.nn, grepl(catagory, data.SPON.sentiments.nn$cats))
+data.SPON.filtered.ne <- filter(data.SPON.sentiments.ne, grepl(catagory, data.SPON.sentiments.ne$cats))
+data.SPON.filtered.xy <- filter(data.SPON.sentiments.xy, grepl(catagory, data.SPON.sentiments.xy$cats))
+data.SPON.filtered.ca <- filter(data.SPON.sentiments.ca, grepl(catagory, data.SPON.sentiments.ca$cats))
+data.SPON.filtered.ad <- filter(data.SPON.sentiments.ad, grepl(catagory, data.SPON.sentiments.ad$cats))
+data.SPON.filtered.pd <- filter(data.SPON.sentiments.pd, grepl(catagory, data.SPON.sentiments.pd$cats))
+data.SPON.filtered.vv <- filter(data.SPON.sentiments.vv, grepl(catagory, data.SPON.sentiments.vv$cats))
+data.SPON.filtered.ap <- filter(data.SPON.sentiments.ap, grepl(catagory, data.SPON.sentiments.ap$cats))
+data.SPON.filtered.pt <- filter(data.SPON.sentiments.pt, grepl(catagory, data.SPON.sentiments.pt$cats))
+data.SPON.filtered.fm <- filter(data.SPON.sentiments.fm, grepl(catagory, data.SPON.sentiments.fm$cats))
+data.SPON.filtered.pi <- filter(data.SPON.sentiments.pi, grepl(catagory, data.SPON.sentiments.pi$cats))
+data.SPON.filtered.ko <- filter(data.SPON.sentiments.ko, grepl(catagory, data.SPON.sentiments.ko$cats))
+data.SPON.filtered.pr <- filter(data.SPON.sentiments.pr, grepl(catagory, data.SPON.sentiments.pr$cats))
+data.SPON.filtered.pp <- filter(data.SPON.sentiments.pp, grepl(catagory, data.SPON.sentiments.pp$cats))
+
+############# Grouping ##############
+######### By Year, Month, Day #######
+
+data.SPON.grouped.all = summarise(group_by(data.SPON.filtered.all, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.nn = summarise(group_by(data.SPON.filtered.nn, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.ne = summarise(group_by(data.SPON.filtered.ne, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.xy = summarise(group_by(data.SPON.filtered.xy, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.ca = summarise(group_by(data.SPON.filtered.ca, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.ad = summarise(group_by(data.SPON.filtered.ad, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.pd = summarise(group_by(data.SPON.filtered.pd, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.vv = summarise(group_by(data.SPON.filtered.vv, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.ap = summarise(group_by(data.SPON.filtered.ap, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.pt = summarise(group_by(data.SPON.filtered.pt, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.fm = summarise(group_by(data.SPON.filtered.fm, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.pi = summarise(group_by(data.SPON.filtered.pi, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.ko = summarise(group_by(data.SPON.filtered.ko, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.pr = summarise(group_by(data.SPON.filtered.pr, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.SPON.grouped.pp = summarise(group_by(data.SPON.filtered.pp, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+
+############# Ordering ##############
+########### By Day and Time #########
+
+data.SPON.grouped.all <- data.SPON.grouped.all[order(data.SPON.grouped.all$year, data.SPON.grouped.all$month, data.SPON.grouped.all$day), ]
+data.SPON.grouped.nn <- data.SPON.grouped.nn[order(data.SPON.grouped.nn$year, data.SPON.grouped.nn$month, data.SPON.grouped.nn$day), ]
+data.SPON.grouped.ne <- data.SPON.grouped.ne[order(data.SPON.grouped.ne$year, data.SPON.grouped.ne$month, data.SPON.grouped.ne$day), ]
+data.SPON.grouped.xy <- data.SPON.grouped.xy[order(data.SPON.grouped.xy$year, data.SPON.grouped.xy$month, data.SPON.grouped.xy$day), ]
+data.SPON.grouped.ca <- data.SPON.grouped.ca[order(data.SPON.grouped.ca$year, data.SPON.grouped.ca$month, data.SPON.grouped.ca$day), ]
+data.SPON.grouped.ad <- data.SPON.grouped.ad[order(data.SPON.grouped.ad$year, data.SPON.grouped.ad$month, data.SPON.grouped.ad$day), ]
+data.SPON.grouped.pd <- data.SPON.grouped.pd[order(data.SPON.grouped.pd$year, data.SPON.grouped.pd$month, data.SPON.grouped.pd$day), ]
+data.SPON.grouped.vv <- data.SPON.grouped.vv[order(data.SPON.grouped.vv$year, data.SPON.grouped.vv$month, data.SPON.grouped.vv$day), ]
+data.SPON.grouped.ap <- data.SPON.grouped.ap[order(data.SPON.grouped.ap$year, data.SPON.grouped.ap$month, data.SPON.grouped.ap$day), ]
+data.SPON.grouped.pt <- data.SPON.grouped.pt[order(data.SPON.grouped.pt$year, data.SPON.grouped.pt$month, data.SPON.grouped.pt$day), ]
+data.SPON.grouped.fm <- data.SPON.grouped.fm[order(data.SPON.grouped.fm$year, data.SPON.grouped.fm$month, data.SPON.grouped.fm$day), ]
+data.SPON.grouped.pi <- data.SPON.grouped.pi[order(data.SPON.grouped.pi$year, data.SPON.grouped.pi$month, data.SPON.grouped.pi$day), ]
+data.SPON.grouped.ko <- data.SPON.grouped.ko[order(data.SPON.grouped.ko$year, data.SPON.grouped.ko$month, data.SPON.grouped.ko$day), ]
+data.SPON.grouped.pr <- data.SPON.grouped.pr[order(data.SPON.grouped.pr$year, data.SPON.grouped.pr$month, data.SPON.grouped.pr$day), ]
+data.SPON.grouped.pp <- data.SPON.grouped.pp[order(data.SPON.grouped.pp$year, data.SPON.grouped.pp$month, data.SPON.grouped.pp$day), ]
+
+############### JF ################
+
+############# Filtering #############
+########### By Catagories ###########
+
+data.JF.filtered.all <- filter(data.JF.sentiments.all, grepl(catagory, data.JF.sentiments.all$cats))
+data.JF.filtered.nn <- filter(data.JF.sentiments.nn, grepl(catagory, data.JF.sentiments.nn$cats))
+data.JF.filtered.ne <- filter(data.JF.sentiments.ne, grepl(catagory, data.JF.sentiments.ne$cats))
+data.JF.filtered.xy <- filter(data.JF.sentiments.xy, grepl(catagory, data.JF.sentiments.xy$cats))
+data.JF.filtered.ca <- filter(data.JF.sentiments.ca, grepl(catagory, data.JF.sentiments.ca$cats))
+data.JF.filtered.ad <- filter(data.JF.sentiments.ad, grepl(catagory, data.JF.sentiments.ad$cats))
+data.JF.filtered.pd <- filter(data.JF.sentiments.pd, grepl(catagory, data.JF.sentiments.pd$cats))
+data.JF.filtered.vv <- filter(data.JF.sentiments.vv, grepl(catagory, data.JF.sentiments.vv$cats))
+data.JF.filtered.ap <- filter(data.JF.sentiments.ap, grepl(catagory, data.JF.sentiments.ap$cats))
+data.JF.filtered.pt <- filter(data.JF.sentiments.pt, grepl(catagory, data.JF.sentiments.pt$cats))
+data.JF.filtered.fm <- filter(data.JF.sentiments.fm, grepl(catagory, data.JF.sentiments.fm$cats))
+data.JF.filtered.pi <- filter(data.JF.sentiments.pi, grepl(catagory, data.JF.sentiments.pi$cats))
+data.JF.filtered.ko <- filter(data.JF.sentiments.ko, grepl(catagory, data.JF.sentiments.ko$cats))
+data.JF.filtered.pr <- filter(data.JF.sentiments.pr, grepl(catagory, data.JF.sentiments.pr$cats))
+data.JF.filtered.pp <- filter(data.JF.sentiments.pp, grepl(catagory, data.JF.sentiments.pp$cats))
+
+############# Grouping ##############
+######### By Year, Month, Day #######
+
+data.JF.grouped.all = summarise(group_by(data.JF.filtered.all, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.nn = summarise(group_by(data.JF.filtered.nn, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.ne = summarise(group_by(data.JF.filtered.ne, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.xy = summarise(group_by(data.JF.filtered.xy, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.ca = summarise(group_by(data.JF.filtered.ca, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.ad = summarise(group_by(data.JF.filtered.ad, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.pd = summarise(group_by(data.JF.filtered.pd, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.vv = summarise(group_by(data.JF.filtered.vv, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.ap = summarise(group_by(data.JF.filtered.ap, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.pt = summarise(group_by(data.JF.filtered.pt, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.fm = summarise(group_by(data.JF.filtered.fm, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.pi = summarise(group_by(data.JF.filtered.pi, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.ko = summarise(group_by(data.JF.filtered.ko, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.pr = summarise(group_by(data.JF.filtered.pr, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+data.JF.grouped.pp = summarise(group_by(data.JF.filtered.pp, year, month, day), positiv_abs = sum(positiv_abs), neutral_abs = sum(neutral_abs), negativ_abs = sum(negativ_abs), positiv_rel = mean(positiv_rel), neutral_rel = mean(neutral_rel), negativ_rel = mean(negativ_rel))
+
+############# Ordering ##############
+######### By Year, Month, Day #######
+
+data.JF.grouped.all <- data.JF.grouped.all[order(data.JF.grouped.all$year, data.JF.grouped.all$month, data.JF.grouped.all$day), ]
+data.JF.grouped.nn <- data.JF.grouped.nn[order(data.JF.grouped.nn$year, data.JF.grouped.nn$month, data.JF.grouped.nn$day), ]
+data.JF.grouped.ne <- data.JF.grouped.ne[order(data.JF.grouped.ne$year, data.JF.grouped.ne$month, data.JF.grouped.ne$day), ]
+data.JF.grouped.xy <- data.JF.grouped.xy[order(data.JF.grouped.xy$year, data.JF.grouped.xy$month, data.JF.grouped.xy$day), ]
+data.JF.grouped.ca <- data.JF.grouped.ca[order(data.JF.grouped.ca$year, data.JF.grouped.ca$month, data.JF.grouped.ca$day), ]
+data.JF.grouped.ad <- data.JF.grouped.ad[order(data.JF.grouped.ad$year, data.JF.grouped.ad$month, data.JF.grouped.ad$day), ]
+data.JF.grouped.pd <- data.JF.grouped.pd[order(data.JF.grouped.pd$year, data.JF.grouped.pd$month, data.JF.grouped.pd$day), ]
+data.JF.grouped.vv <- data.JF.grouped.vv[order(data.JF.grouped.vv$year, data.JF.grouped.vv$month, data.JF.grouped.vv$day), ]
+data.JF.grouped.ap <- data.JF.grouped.ap[order(data.JF.grouped.ap$year, data.JF.grouped.ap$month, data.JF.grouped.ap$day), ]
+data.JF.grouped.pt <- data.JF.grouped.pt[order(data.JF.grouped.pt$year, data.JF.grouped.pt$month, data.JF.grouped.pt$day), ]
+data.JF.grouped.fm <- data.JF.grouped.fm[order(data.JF.grouped.fm$year, data.JF.grouped.fm$month, data.JF.grouped.fm$day), ]
+data.JF.grouped.pi <- data.JF.grouped.pi[order(data.JF.grouped.pi$year, data.JF.grouped.pi$month, data.JF.grouped.pi$day), ]
+data.JF.grouped.ko <- data.JF.grouped.ko[order(data.JF.grouped.ko$year, data.JF.grouped.ko$month, data.JF.grouped.ko$day), ]
+data.JF.grouped.pr <- data.JF.grouped.pr[order(data.JF.grouped.pr$year, data.JF.grouped.pr$month, data.JF.grouped.pr$day), ]
+data.JF.grouped.pp <- data.JF.grouped.pp[order(data.JF.grouped.pp$year, data.JF.grouped.pp$month, data.JF.grouped.pp$day), ]
+
+####################################
+# -4- Saving Result
+####################################
+
+############### SPON ################
+
+write.csv(data.SPON.grouped.all, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_All", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.nn, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_NN", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ne, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_NE", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.xy, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_XY", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ca, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_CA", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ad, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_AD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pd, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.vv, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_VV", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ap, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_AP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pt, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PT", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.fm, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_FM", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pi, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PI", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ko, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_KO", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pr, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PR", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pp, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+
+############### JF ################
+
+write.csv(data.JF.grouped.nn, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_NN", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ne, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_NE", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.xy, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_XY", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ca, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_CA", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ad, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_AD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pd, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.vv, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_VV", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ap, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_AP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pt, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PT", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.fm, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_FM", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pi, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PI", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ko, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_KO", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pr, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PR", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pp, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+
+
+#data.filtered.wirtschaft <- filter(data.SPON.sentiments.all, grepl("Wirtschaft", data.sentiments.all$cats))
+#data.filtered.ausland <- filter(data.SPON.sentiments.all, grepl("Ausland", data.sentiments.all$cats))
+#data.filtered.nahostkonflikt <- filter(data.SPON.sentiments.all, grepl("Nahostkonflikt", data.sentiments.all$cats))
