@@ -1,6 +1,6 @@
 install.packages("stringr")
 install.packages("plyr")
-install.pachage("dplyr")
+install.packages("dplyr")
 
 library("plyr")
 library("stringr")
@@ -62,9 +62,9 @@ analyse.sentiment = function(data, pos.words, neu.words, neg.words, .progress='n
 ######### Sentiment Files ##########
 
 # Load sentiment files
-pos.table = read.table('/Users/admin/Desktop/GSN/Sentimentanalyse/GermanPolarityClues-2012/GermanPolarityClues-Positive-Lemma-21042012.tsv', encoding="UTF-16LE", header=FALSE, sep="\t")
-neg.table = read.table('/Users/admin/Desktop/GSN/Sentimentanalyse/GermanPolarityClues-2012/GermanPolarityClues-Negative-Lemma-21042012.tsv', encoding="UTF-16LE", header=FALSE, sep="\t")
-neu.table = read.table('/Users/admin/Desktop/GSN/Sentimentanalyse/GermanPolarityClues-2012/GermanPolarityClues-Neutral-Lemma-21042012.tsv', encoding="UTF-16LE", header=FALSE, sep="\t")
+pos.table = read.table('/share/GermanPolarityClues-2012/GermanPolarityClues-Positive-Lemma-21042012.tsv', encoding="UTF-16LE", header=FALSE, sep="\t")
+neg.table = read.table('/share/GermanPolarityClues-2012/GermanPolarityClues-Negative-Lemma-21042012.tsv', encoding="UTF-16LE", header=FALSE, sep="\t")
+neu.table = read.table('/share/GermanPolarityClues-2012/GermanPolarityClues-Neutral-Lemma-21042012.tsv', encoding="UTF-16LE", header=FALSE, sep="\t")
 
 # Filter all sentiment words to word lists
 pos.words = pos.table$V2
@@ -149,7 +149,7 @@ pp.neu.words = neu.table[neu.table$V3 == "PP", ]$V2
 ############### SPON ################
 
 # Load CSV File
-data.SPON <- read.csv("/Users/admin/Desktop/GSN/Daten/SPON_complete.csv", encoding="UTF-16LE", header = TRUE, sep = ",", quote = "\"", dec = ".", fill = TRUE, comment.char = "")
+data.SPON <- read.csv("/share/Data/SPON_complete.csv", encoding="UTF-16LE", header = TRUE, sep = ",", quote = "\"", dec = ".", fill = TRUE, comment.char = "")
 
 # Convert String to Date
 # data.SPON$day <- as.Date(data.SPON$day, format="%d.%m.%Y")
@@ -167,7 +167,7 @@ data.SPON$article<-as.factor(data.SPON$article)
 ############### JF ################
 
 # Load CSV File
-data.JF <- read.csv("/Users/admin/Desktop/GSN/Daten/jungefreiheit.csv", encoding="UTF-16LE", header = TRUE, sep = ",", quote = "\"", dec = ".", fill = TRUE, comment.char = "")
+data.JF <- read.csv("/share/DATA/jungefreiheit.csv", encoding="UTF-16LE", header = TRUE, sep = ",", quote = "\"", dec = ".", fill = TRUE, comment.char = "")
 
 # Convert String to Date
 # data.JF$day <- as.Date(data.JF$day, format="%d.%m.%Y")
@@ -255,6 +255,8 @@ data.JF.sentiments.pp = analyse.sentiment(data.JF, pp.pos.words, pp.neu.words, p
 ####################################
 ########## All Catagories ##########
 ####################################
+
+catagory = "All"
 
 ####################################
 # -3- Result Processing
@@ -346,38 +348,39 @@ data.JF.grouped.pp <- data.JF.grouped.pp[order(data.JF.grouped.pp$year, data.JF.
 
 ############### SPON ################
 
-write.csv(data.SPON.grouped.all, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_All", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.nn, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_NN", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.ne, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_NE", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.xy, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_XY", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.ca, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_CA", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.ad, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_AD", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.pd, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PD", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.vv, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_VV", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.ap, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_AP", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.pt, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PT", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.fm, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_FM", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.pi, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PI", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.ko, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_KO", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.pr, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PR", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.pp, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PP", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.all, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/", "SPON_All", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.nn, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_NN", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ne, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_NE", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.xy, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_XY", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ca, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_CA", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ad, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_AD", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pd, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_PD", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.vv, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_VV", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ap, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_AP", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pt, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_PT", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.fm, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_FM", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pi, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_PI", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ko, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_KO", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pr, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_PR", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pp, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_PP", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
 
 ############### JF ################
 
-write.csv(data.JF.grouped.nn, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_NN", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.ne, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_NE", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.xy, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_XY", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.ca, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_CA", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.ad, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_AD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.pd, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.vv, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_VV", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.ap, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_AP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.pt, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PT", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.fm, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_FM", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.pi, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PI", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.ko, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_KO", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.pr, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PR", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.pp, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.all, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_ALL", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.nn, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_NN", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ne, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_NE", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.xy, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_XY", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ca, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_CA", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ad, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_AD", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pd, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_PD", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.vv, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_VV", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ap, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_AP", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pt, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_PT", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.fm, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_FM", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pi, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_PI", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ko, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_KO", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pr, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_PR", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pp, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_PP", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
 
 #####################################
 ############## Politik ##############
@@ -513,38 +516,38 @@ data.JF.grouped.pp <- data.JF.grouped.pp[order(data.JF.grouped.pp$year, data.JF.
 
 ############### SPON ################
 
-write.csv(data.SPON.grouped.all, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_All", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.nn, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_NN", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.ne, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_NE", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.xy, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_XY", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.ca, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_CA", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.ad, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_AD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.pd, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.vv, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_VV", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.ap, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_AP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.pt, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PT", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.fm, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_FM", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.pi, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PI", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.ko, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_KO", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.pr, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PR", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.pp, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.all, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_All", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.nn, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_NN", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ne, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_NE", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.xy, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_XY", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ca, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_CA", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ad, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_AD", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pd, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_PD", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.vv, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_VV", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ap, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_AP", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pt, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_PT", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.fm, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_FM", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pi, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_PI", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ko, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_KO", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pr, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_PR", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pp, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_PP", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
 
 ############### JF ################
 
-write.csv(data.JF.grouped.nn, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_NN", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.ne, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_NE", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.xy, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_XY", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.ca, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_CA", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.ad, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_AD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.pd, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.vv, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_VV", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.ap, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_AP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.pt, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PT", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.fm, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_FM", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.pi, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PI", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.ko, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_KO", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.pr, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PR", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.pp, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.nn, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_NN", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ne, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_NE", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.xy, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_XY", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ca, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_CA", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ad, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_AD", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pd, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_PD", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.vv, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_VV", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ap, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_AP", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pt, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_PT", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.fm, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_FM", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pi, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_PI", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ko, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_KO", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pr, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_PR", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pp, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_PP", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
 
 #####################################
 ############## Kultur ###############
@@ -680,38 +683,38 @@ data.JF.grouped.pp <- data.JF.grouped.pp[order(data.JF.grouped.pp$year, data.JF.
 
 ############### SPON ################
 
-write.csv(data.SPON.grouped.all, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_All", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.nn, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_NN", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.ne, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_NE", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.xy, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_XY", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.ca, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_CA", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.ad, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_AD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.pd, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.vv, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_VV", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.ap, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_AP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.pt, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PT", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.fm, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_FM", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.pi, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PI", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.ko, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_KO", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.pr, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PR", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.pp, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.all, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_All", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.nn, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_NN", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ne, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_NE", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.xy, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_XY", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ca, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_CA", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ad, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_AD", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pd, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_PD", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.vv, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_VV", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ap, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_AP", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pt, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_PT", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.fm, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_FM", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pi, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_PI", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ko, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_KO", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pr, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_PR", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pp, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_PP", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
 
 ############### JF ################
 
-write.csv(data.JF.grouped.nn, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_NN", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.ne, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_NE", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.xy, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_XY", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.ca, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_CA", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.ad, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_AD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.pd, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.vv, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_VV", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.ap, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_AP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.pt, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PT", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.fm, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_FM", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.pi, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PI", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.ko, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_KO", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.pr, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PR", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.pp, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.nn, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_NN", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ne, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_NE", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.xy, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_XY", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ca, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_CA", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ad, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_AD", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pd, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_PD", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.vv, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_VV", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ap, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_AP", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pt, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_PT", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.fm, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_FM", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pi, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_PI", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ko, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_KO", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pr, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_PR", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pp, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_PP", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
 
 
 #####################################
@@ -848,38 +851,38 @@ data.JF.grouped.pp <- data.JF.grouped.pp[order(data.JF.grouped.pp$year, data.JF.
 
 ############### SPON ################
 
-write.csv(data.SPON.grouped.all, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_All", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.nn, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_NN", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.ne, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_NE", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.xy, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_XY", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.ca, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_CA", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.ad, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_AD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.pd, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.vv, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_VV", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.ap, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_AP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.pt, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PT", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.fm, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_FM", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.pi, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PI", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.ko, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_KO", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.pr, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PR", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.pp, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.all, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_All", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.nn, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_NN", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ne, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_NE", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.xy, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_XY", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ca, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_CA", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ad, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_AD", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pd, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_PD", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.vv, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_VV", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ap, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_AP", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pt, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_PT", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.fm, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_FM", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pi, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_PI", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ko, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_KO", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pr, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_PR", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pp, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_PP", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
 
 ############### JF ################
 
-write.csv(data.JF.grouped.nn, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_NN", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.ne, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_NE", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.xy, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_XY", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.ca, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_CA", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.ad, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_AD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.pd, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.vv, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_VV", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.ap, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_AP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.pt, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PT", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.fm, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_FM", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.pi, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PI", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.ko, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_KO", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.pr, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PR", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.pp, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.nn, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_NN", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ne, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_NE", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.xy, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_XY", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ca, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_CA", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ad, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_AD", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pd, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_PD", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.vv, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_VV", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ap, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_AP", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pt, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_PT", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.fm, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_FM", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pi, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_PI", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ko, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_KO", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pr, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_PR", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pp, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_PP", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
 
 #####################################
 ############## Meinung ##############
@@ -1015,38 +1018,38 @@ data.JF.grouped.pp <- data.JF.grouped.pp[order(data.JF.grouped.pp$year, data.JF.
 
 ############### SPON ################
 
-write.csv(data.SPON.grouped.all, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_All", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.nn, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_NN", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.ne, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_NE", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.xy, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_XY", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.ca, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_CA", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.ad, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_AD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.pd, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.vv, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_VV", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.ap, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_AP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.pt, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PT", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.fm, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_FM", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.pi, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PI", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.ko, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_KO", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.pr, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PR", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.SPON.grouped.pp, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/SPON/", "SPON_PP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.all, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_All", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.nn, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_NN", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ne, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_NE", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.xy, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_XY", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ca, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_CA", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ad, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_AD", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pd, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_PD", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.vv, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_VV", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ap, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_AP", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pt, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_PT", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.fm, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_FM", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pi, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_PI", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.ko, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_KO", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pr, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_PR", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.SPON.grouped.pp, file=paste0("/share/Ergebnisse/Sentiment/SPON/", catagory, "/",  "SPON_PP", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
 
 ############### JF ################
 
-write.csv(data.JF.grouped.nn, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_NN", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.ne, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_NE", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.xy, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_XY", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.ca, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_CA", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.ad, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_AD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.pd, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PD", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.vv, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_VV", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.ap, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_AP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.pt, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PT", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.fm, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_FM", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.pi, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PI", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.ko, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_KO", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.pr, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PR", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
-write.csv(data.JF.grouped.pp, file=paste("/Users/admin/Desktop/GSN/Sentimentanalyse/sentiment/JF/", "JF_PP", catagory, ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.nn, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_NN", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ne, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_NE", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.xy, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_XY", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ca, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_CA", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ad, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_AD", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pd, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_PD", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.vv, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_VV", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ap, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_AP", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pt, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_PT", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.fm, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_FM", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pi, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_PI", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.ko, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_KO", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pr, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_PR", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
+write.csv(data.JF.grouped.pp, file=paste0("/share/Ergebnisse/Sentiment/JF", catagory, "/",  "JF_PP", ".csv"), sep=",", row.names=TRUE, fileEncoding = "UTF-16LE")
 
 
 #data.filtered.wirtschaft <- filter(data.SPON.sentiments.all, grepl("Wirtschaft", data.sentiments.all$cats))
